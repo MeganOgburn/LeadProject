@@ -16,9 +16,9 @@ Data labels: All field samples begin with the ID label "S" to indicate "sample",
 In total there are 47 samples in the data set: dirt x 10 + caterpillar x 10 + leaf x 10 + dirt_x10 x 10 + Dirt 1 + Dirt 2 + MW 1 + MW 2 + Buffalo River + Buffalo River_x10
 
 ```{r setup, include=FALSE}
-setwd("~/Dropbox/Megan Ogburn/Lead Project/Data")
+
 library(tidyverse)
-Raw.data<-read.csv("~/Dropbox/Megan Ogburn/Lead Project/Data/Raw_lead_data_for_R.csv", header=TRUE)
+Raw.data<-read.csv("./Data/Raw_lead_data_for_R.csv", header=TRUE)
 Raw.data<-as.data.frame(Raw.data)
 ```
 
