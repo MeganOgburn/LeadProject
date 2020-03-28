@@ -207,7 +207,7 @@ $(document).ready(function () {
 <div id="visualizing-the-data" class="section level1">
 <h1>Visualizing the data</h1>
 <pre class="r"><code>str(Raw.data)</code></pre>
-<pre><code>## 'data.frame':    282 obs. of  29 variables:
+<pre><code>## 'data.frame':    282 obs. of  30 variables:
 ##  $ Sample.ID                     : Factor w/ 47 levels &quot;Buffalo River&quot;,..: 5 5 5 5 5 5 9 9 9 9 ...
 ##  $ Mass..in.g.of.digested.sample.: num  0 0 0 0 0 ...
 ##  $ Isotope                       : Factor w/ 6 levels &quot;Concentration AVG&quot;,..: 4 6 5 1 3 2 4 6 5 1 ...
@@ -236,7 +236,8 @@ $(document).ready(function () {
 ##  $ Extraction.from.blue.in.mL    : num  2.5 2.5 2.5 2.5 2.5 2.5 0.2 0.2 0.2 0.2 ...
 ##  $ First.Orange.Volume.in.mL     : int  5 5 5 5 5 5 10 10 10 10 ...
 ##  $ Extraction.from.Orange.in.mL  : num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ Second.Orange.Volume.in.mL    : int  NA NA NA NA NA NA NA NA NA NA ...</code></pre>
+##  $ Second.Orange.Volume.in.mL    : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ Sample.type                   : Factor w/ 8 levels &quot;soil&quot;,&quot;soil.control&quot;,..: 8 8 8 8 8 8 1 1 1 1 ...</code></pre>
 </div>
 <div id="cleaning-the-data" class="section level1">
 <h1>Cleaning the data</h1>
@@ -256,6 +257,7 @@ Raw.data$X.8&lt;-NULL
 Raw.data$X.9&lt;-NULL
 Raw.data$In115.MR.&lt;-NULL
 Raw.data$X.10&lt;-NULL
+
 
 #Creating columns for calculations
 samples&lt;-summary(Raw.data$Sample.ID)
@@ -277,7 +279,7 @@ names(samples)</code></pre>
 ## [43] &quot;S009L&quot;             &quot;S010C&quot;             &quot;S010D&quot;            
 ## [46] &quot;S010D_x10&quot;         &quot;S010L&quot;</code></pre>
 <pre class="r"><code>#Assigning Final blue volume (in mL) as 15 mL for dirt/soil samples and 5 mL for all other samples (caterpillar, leaf, blank)
-Raw.data$Final.Blue.Volume.in.mL&lt;-(ifelse(Raw.data$Sample.ID %in% c(&quot;S001D&quot;,&quot;S002D&quot;,&quot;S003D&quot;,&quot;S004D&quot;,&quot;S005D&quot;,&quot;S006D&quot;,&quot;S007D&quot;,&quot;S008D&quot;,&quot;S009D&quot;,&quot;S010D&quot;,&quot;Buffalo River&quot;,&quot;Dirt1&quot;,&quot;Dirt2&quot;,&quot;S001D_x10&quot;,&quot;S002D_x10&quot;,&quot;S003D_x10&quot;,&quot;S004D_x10&quot;,&quot;S005D_x10&quot;,&quot;S006D_x10&quot;,&quot;S007D_x10&quot;,&quot;S008D_x10&quot;,&quot;S009D_x10&quot;,&quot;S010D_x10&quot;), 15, 5))
+Raw.data$Final.Blue.Volume.in.mL&lt;-(ifelse(Raw.data$Sample.ID %in% c(soil.samples,soil.samples.diluted,soil.controls,soil.controls.diluted), 15, 5))
 
 #Assigning Extraction from blue (in mL) as 0.2 for dirt/soil samples and 2.5 for all other samples (caterpillar, leaf, blank)
 Raw.data$Extraction.from.blue.in.mL&lt;-(ifelse(Raw.data$Sample.ID %in% c(&quot;S001D&quot;,&quot;S002D&quot;,&quot;S003D&quot;,&quot;S004D&quot;,&quot;S005D&quot;,&quot;S006D&quot;,&quot;S007D&quot;,&quot;S008D&quot;,&quot;S009D&quot;,&quot;S010D&quot;,&quot;Buffalo River&quot;,&quot;Dirt1&quot;,&quot;Dirt2&quot;,&quot;S001D_x10&quot;,&quot;S002D_x10&quot;,&quot;S003D_x10&quot;,&quot;S004D_x10&quot;,&quot;S005D_x10&quot;,&quot;S006D_x10&quot;,&quot;S007D_x10&quot;,&quot;S008D_x10&quot;,&quot;S009D_x10&quot;,&quot;S010D_x10&quot;), 0.2, 2.5))
@@ -292,7 +294,7 @@ Raw.data$Extraction.from.Orange.in.mL&lt;-(ifelse(Raw.data$Sample.ID %in% c(&quo
 Raw.data$Second.Orange.Volume.in.mL&lt;-(ifelse(Raw.data$Sample.ID %in% c(&quot;S001D_x10&quot;,&quot;S002D_x10&quot;,&quot;S003D_x10&quot;,&quot;S004D_x10&quot;,&quot;S005D_x10&quot;,&quot;S006D_x10&quot;,&quot;S007D_x10&quot;,&quot;S008D_x10&quot;,&quot;S009D_x10&quot;,&quot;S010D_x10&quot;,&quot;Buffalo River_x10&quot;), 5, NA))
 
 str(Raw.data)</code></pre>
-<pre><code>## 'data.frame':    282 obs. of  16 variables:
+<pre><code>## 'data.frame':    282 obs. of  17 variables:
 ##  $ Sample.ID                     : Factor w/ 47 levels &quot;Buffalo River&quot;,..: 5 5 5 5 5 5 9 9 9 9 ...
 ##  $ Mass..in.g.of.digested.sample.: num  0 0 0 0 0 ...
 ##  $ Isotope                       : Factor w/ 6 levels &quot;Concentration AVG&quot;,..: 4 6 5 1 3 2 4 6 5 1 ...
@@ -308,7 +310,8 @@ str(Raw.data)</code></pre>
 ##  $ Extraction.from.blue.in.mL    : num  2.5 2.5 2.5 2.5 2.5 2.5 0.2 0.2 0.2 0.2 ...
 ##  $ First.Orange.Volume.in.mL     : num  5 5 5 5 5 5 10 10 10 10 ...
 ##  $ Extraction.from.Orange.in.mL  : num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ Second.Orange.Volume.in.mL    : num  NA NA NA NA NA NA NA NA NA NA ...</code></pre>
+##  $ Second.Orange.Volume.in.mL    : num  NA NA NA NA NA NA NA NA NA NA ...
+##  $ Sample.type                   : Factor w/ 8 levels &quot;soil&quot;,&quot;soil.control&quot;,..: 8 8 8 8 8 8 1 1 1 1 ...</code></pre>
 </div>
 <div id="calculating-ppm-for-each-element" class="section level1">
 <h1>Calculating PPM for each element</h1>
@@ -318,24 +321,40 @@ str(Raw.data)</code></pre>
 <pre class="r"><code>#PPM of Cd in sample for all samples (note, ignore TWICE dilluted dirt/soil samples)
 Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Cd.in.sample=Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
+#ignore TWICE dilluted dirt/soil samples because...
+Raw.data$PPM.Cd.in.sample[Raw.data$Sample.type==&quot;soil.diluted&quot; | Raw.data$Sample.type==&quot;soil.control.diluted&quot;]&lt;-NA
+
 #Raw.data$PPM.Cd.in.sample&lt;-NA
 
 #Raw.data$PPM.Cd.in.sample&lt;-(Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL))</code></pre>
 </div>
 <div id="ppm-for-lead" class="section level2">
 <h2>PPM for Lead</h2>
-<pre class="r"><code>#PPM of Pb in sample for twice dilluted dirt/soil samples
-Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Pb.in.dilluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Pb.in.dilluted.dirt=PPM.Pb.in.dilluted.dirt/1000)
+<pre class="r"><code>#PPM of Pb in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
+Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Pb.in.sample=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+
+#PPM of Pb in sample for twice dilluted dirt/soil samples
+PPM.Pb.in.dilluted.dirt=(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
+
+Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type == &quot;soil.diluted&quot; | Raw.data$Sample.type ==  &quot;soil.control.diluted&quot;]&lt;-PPM.Pb.in.dilluted.dirt[Raw.data$Sample.type == &quot;soil.diluted&quot; | Raw.data$Sample.type ==  &quot;soil.control.diluted&quot;]
+
+Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type ==&quot;soil&quot; | Raw.data$Sample.type ==&quot;soil.control&quot;]&lt;-NA
+
+
+
+
+#Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Pb.in.dilluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
+
+#Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Pb.in.dilluted.dirt=PPM.Pb.in.dilluted.dirt/1000)
 
 ####Raw.data$PPM.Pb.in.dilluted.dirt&lt;-0
 ####Raw.data$PPM.Pb.in.dilluted.dirt&lt;-(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
 
 ####Raw.data$PPM.Pb.divided.1000&lt;-(Raw.data$PPM.Pb.in.dilluted.dirt/1000)
 
-#PPM of Pb in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
 
-Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Pb.in.sample=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
 
 ####Raw.data$PPM.Pb.in.sample&lt;-(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)</code></pre>
 </div>
@@ -401,40 +420,25 @@ Raw.data&lt;-Raw.data%&gt;%mutate(PPM.Zn.in.sample=Raw.data$Zn66.MR.*(Raw.data$F
 </div>
 <div id="seeing-only-concentration-avg-from-isotopes-column" class="section level1">
 <h1>Seeing only “Concentration AVG”&quot; from “Isotopes” column</h1>
-<pre class="r"><code>Concentration.AVG=Raw.data[seq(4, nrow(Raw.data), 6), ]
-Concentration.AVG$Isotope&lt;-NULL
-Concentration.AVG$Mass..in.g.of.digested.sample.&lt;-NULL
-Concentration.AVG$Cd111.LR.&lt;-NULL
-Concentration.AVG$Pb208.LR.&lt;-NULL
-Concentration.AVG$V51.MR.&lt;-NULL
-Concentration.AVG$Cr52.MR.&lt;-NULL
-Concentration.AVG$Mn55.MR.&lt;-NULL
-Concentration.AVG$Ni60.MR.&lt;-NULL
-Concentration.AVG$Cu63.MR.&lt;-NULL
-Concentration.AVG$Zn66.MR.&lt;-NULL
-Concentration.AVG$Final.Blue.Volume.in.mL&lt;-NULL
-Concentration.AVG$Extraction.from.blue.in.mL&lt;-NULL
-Concentration.AVG$First.Orange.Volume.in.mL&lt;-NULL
-Concentration.AVG$Extraction.from.Orange.in.mL&lt;-NULL
-Concentration.AVG$Second.Orange.Volume.in.mL&lt;-NULL
-str(Concentration.AVG)</code></pre>
-<pre><code>## 'data.frame':    47 obs. of  15 variables:
-##  $ Sample.ID              : Factor w/ 47 levels &quot;Buffalo River&quot;,..: 5 9 13 17 21 25 29 33 37 41 ...
-##  $ PPM.Cd.in.sample       : num  Inf 1.014 2.492 0.931 0.395 ...
-##  $ PPM.Pb.in.dilluted.dirt: num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ PPM.Pb.in.sample       : num  Inf 184.4 1630.5 421.2 34.7 ...
-##  $ PPM.V.in.dilluted.dirt : num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ PPM.V.in.sample        : num  Inf 29.92 28.26 10.31 9.91 ...
-##  $ PPM.Cr.in.dilluted.dirt: num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ PPM.Cr.in.sample       : num  Inf 23 74.5 10.9 11.5 ...
-##  $ PPM.Mn.in.dilluted.dirt: num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ PPM.Mn.in.sample       : num  Inf 704 742 441 242 ...
-##  $ PPM.Ni.in.sample       : num  Inf 26.83 29.41 8.73 14.73 ...
-##  $ PPM.Cu.in.dilluted.dirt: num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ PPM.Cu.in.sample       : num  Inf 50.5 184.1 58 35.8 ...
-##  $ PPM.Zn.in.dilluted.dirt: num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ PPM.Zn.in.sample       : num  Inf 209 1330 291 137 ...</code></pre>
-<pre class="r"><code>Concentration.AVG&lt;-as.data.frame(Concentration.AVG)</code></pre>
+<pre class="r"><code>Concentration.AVG &lt;- Raw.data %&gt;% filter(Isotope==&quot;Concentration AVG&quot;) %&gt;% select(Sample.ID,Sample.type,PPM.Cd.in.sample,PPM.Pb.in.sample)
+  
+# Concentration.AVG$Mass..in.g.of.digested.sample.&lt;-NULL
+# Concentration.AVG$Cd111.LR.&lt;-NULL
+# Concentration.AVG$Pb208.LR.&lt;-NULL
+# Concentration.AVG$V51.MR.&lt;-NULL
+# Concentration.AVG$Cr52.MR.&lt;-NULL
+# Concentration.AVG$Mn55.MR.&lt;-NULL
+# Concentration.AVG$Ni60.MR.&lt;-NULL
+# Concentration.AVG$Cu63.MR.&lt;-NULL
+# Concentration.AVG$Zn66.MR.&lt;-NULL
+# Concentration.AVG$Final.Blue.Volume.in.mL&lt;-NULL
+# Concentration.AVG$Extraction.from.blue.in.mL&lt;-NULL
+# Concentration.AVG$First.Orange.Volume.in.mL&lt;-NULL
+# Concentration.AVG$Extraction.from.Orange.in.mL&lt;-NULL
+# Concentration.AVG$Second.Orange.Volume.in.mL&lt;-NULL
+# str(Concentration.AVG)
+# 
+# Concentration.AVG&lt;-as.data.frame(Concentration.AVG)</code></pre>
 </div>
 <div id="seeing-only-concentration-std-from-isotopes-column" class="section level1">
 <h1>Seeing only “Concentration STD”&quot; from “Isotopes” column</h1>
@@ -457,9 +461,9 @@ Concentration.STD$Second.Orange.Volume.in.mL&lt;-NULL
 str(Concentration.STD)</code></pre>
 <pre><code>## 'data.frame':    47 obs. of  15 variables:
 ##  $ Sample.ID              : Factor w/ 47 levels &quot;Buffalo River&quot;,..: 5 9 13 17 21 25 29 33 37 41 ...
+##  $ Sample.type            : Factor w/ 8 levels &quot;soil&quot;,&quot;soil.control&quot;,..: 8 1 1 1 1 1 1 1 1 1 ...
 ##  $ PPM.Cd.in.sample       : num  Inf 0.00606 0.0132 0.00868 0.0101 ...
-##  $ PPM.Pb.in.dilluted.dirt: num  NA NA NA NA NA NA NA NA NA NA ...
-##  $ PPM.Pb.in.sample       : num  Inf 0.2924 9.566 1.9275 0.0938 ...
+##  $ PPM.Pb.in.sample       : num  Inf NA NA NA NA ...
 ##  $ PPM.V.in.dilluted.dirt : num  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ PPM.V.in.sample        : num  Inf 1.171 0.415 0.155 0.16 ...
 ##  $ PPM.Cr.in.dilluted.dirt: num  NA NA NA NA NA NA NA NA NA NA ...
@@ -477,6 +481,10 @@ str(Concentration.STD)</code></pre>
 <h1>Understanding the data</h1>
 <p>In his paper in 1999 Mielke found these urban soil ppm 120 Pb, 130 Zn, 3.2 Cd, 138 Mn, 2.1 Cr, 9.8 Ni, 3.8 V, and 12.7 Cu.</p>
 <pre class="r"><code>#Average leaf concentration
+sum.AVG&lt;-Concentration.AVG %&gt;% group_by(Sample.type) %&gt;% summarize(meanCd=mean(PPM.Cd.in.sample),
+          meanPb=mean(PPM.Pb.in.sample))
+
+
 
 #Making a dataframe of just leaf samples to try and take the average (since taking the average of part of a dataframe wasn't working for me)
 Concentration.AVG.Leaf=Concentration.AVG$Sample.ID %in%c(&quot;S001L&quot;,&quot;S002L&quot;,&quot;S003L&quot;,&quot;S004L&quot;,&quot;S005L&quot;,&quot;S006L&quot;,&quot;S007L&quot;,&quot;S008L&quot;,&quot;S009L&quot;,&quot;S010L&quot;)
