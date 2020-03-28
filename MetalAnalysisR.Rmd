@@ -22,7 +22,7 @@ Raw.data<-read.csv("./Data/Raw_lead_data_for_R.csv", header=TRUE)
 Raw.data<-as.data.frame(Raw.data)
 
 
-#make vectors by sample type
+#Making vectors by sample type
 soil.samples<-c("S001D","S002D","S003D","S004D","S005D","S006D","S007D","S008D","S009D","S010D")
 soil.controls<-c("Buffalo River","Dirt1","Dirt2")
 soil.controls.diluted<-c("Buffalo River_x10")
@@ -32,6 +32,7 @@ leaf.samples<-c("S001L","S002L","S003L","S004L","S005L","S006L","S007L","S008L",
 leaf.controls<-c("MW1","MW2")
 method.blanks<-c("Method Blank")
 
+#Making data fram of sample types
 sample.type.df<-rbind(data.frame(Sample.ID =soil.samples,Sample.type = "soil"),
       data.frame(Sample.ID =soil.controls,Sample.type = "soil.control"),
       data.frame(Sample.ID =soil.controls.diluted,Sample.type = "soil.control.diluted"),
@@ -41,6 +42,7 @@ sample.type.df<-rbind(data.frame(Sample.ID =soil.samples,Sample.type = "soil"),
       data.frame(Sample.ID =leaf.controls,Sample.type = "leaf.control"),
       data.frame(Sample.ID =method.blanks,Sample.type = "method.blank"))
 
+#Merging sample type data frame with Raw.Data data frame by "Sample.ID"
 sample.type.df$Sample.ID<-factor(sample.type.df$Sample.ID,levels=levels(Raw.data$Sample.ID))
 Raw.data <- Raw.data %>% left_join(sample.type.df,by="Sample.ID")
 
@@ -82,16 +84,16 @@ names(samples)
 Raw.data$Final.Blue.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples,soil.samples.diluted,soil.controls,soil.controls.diluted), 15, 5))
 
 #Assigning Extraction from blue (in mL) as 0.2 for dirt/soil samples and 2.5 for all other samples (caterpillar, leaf, blank)
-Raw.data$Extraction.from.blue.in.mL<-(ifelse(Raw.data$Sample.ID %in% c("S001D","S002D","S003D","S004D","S005D","S006D","S007D","S008D","S009D","S010D","Buffalo River","Dirt1","Dirt2","S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10"), 0.2, 2.5))
+Raw.data$Extraction.from.blue.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples,soil.samples.diluted,soil.controls,soil.controls.diluted), 0.2, 2.5))
 
 #Assigning First Orange Volume (in mL) as 10 for dirt/soil samples and 5 for all other samples (caterpillar, leaf, blank)
-Raw.data$First.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c("S001D","S002D","S003D","S004D","S005D","S006D","S007D","S008D","S009D","S010D","Buffalo River","Dirt1","Dirt2","S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10"), 10, 5))
+Raw.data$First.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples,soil.samples.diluted,soil.controls,soil.controls.diluted), 10, 5))
 
 #Assigning Extraction from Orange (in mL) as 0.5 for dilluted dirt/soil samples and NA for all other samples (caterpillar, leaf, blank, nondilluted dirt/soil)
-Raw.data$Extraction.from.Orange.in.mL<-(ifelse(Raw.data$Sample.ID %in% c("S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10","Buffalo River_x10"), 0.5, NA))
+Raw.data$Extraction.from.Orange.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples.diluted,soil.controls.diluted), 0.5, NA))
 
 #Assigning Second Orange Volume (in mL) as 5 for dilluted dirt/soil samples and NA for all other samples (caterpillar, leaf, blank, nondilluted dirt/soil)
-Raw.data$Second.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c("S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10","Buffalo River_x10"), 5, NA))
+Raw.data$Second.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples.diluted,soil.controls.diluted), 5, NA))
 
 str(Raw.data)
 
@@ -294,7 +296,7 @@ In his paper in 1999 Mielke found these urban soil ppm 120 Pb, 130 Zn, 3.2 Cd, 1
 ```{r}
 #Average leaf concentration
 sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(PPM.Cd.in.sample),
-                                                          meanPb=mean(PPM.Pb.in.sample))
+          meanPb=mean(PPM.Pb.in.sample))
 
 
 
