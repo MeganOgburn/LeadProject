@@ -5,7 +5,7 @@ date: "3/6/2020"
 output: html_document
 ---
 #Reading in the csv file
-Data labels: All field samples begin with the ID label "S" to indicate "sample", then three number spaces to indicate "sample number", followed by "D" for dirt/soil or "C" for caterpillar or "L" for leaf/milkweed. A first leaf sample would have the ID: SOO1L. Soil/dirt samples (plus the Buffalo River sample) were dilluted further and re-run, so these samples have an additional "_x10" at the end. 
+Data labels: All field samples begin with the ID label "S" to indicate "sample", then three number spaces to indicate "sample number", followed by "D" for dirt/soil or "C" for caterpillar or "L" for leaf/milkweed. A first leaf sample would have the ID: SOO1L. Soil/dirt samples (plus the Buffalo River sample) were diluted further and re-run, so these samples have an additional "_x10" at the end. 
 
 "Buffalo River" is a sample of known metal concentration which we can use to see if the machine is giving us accurate results. 
 
@@ -42,7 +42,7 @@ sample.type.df<-rbind(data.frame(Sample.ID =soil.samples,Sample.type = "soil"),
       data.frame(Sample.ID =leaf.controls,Sample.type = "leaf.control"),
       data.frame(Sample.ID =method.blanks,Sample.type = "method.blank"))
 
-#Merging sample type data frame with Raw.Data data frame by "Sample.ID"
+#Merging sample type data frame with Raw.Data data frame by "Sample.ID" while making sure that each df has the same number of levels. Sample.type becomes a column at the end of the Raw.data df
 sample.type.df$Sample.ID<-factor(sample.type.df$Sample.ID,levels=levels(Raw.data$Sample.ID))
 Raw.data <- Raw.data %>% left_join(sample.type.df,by="Sample.ID")
 
@@ -89,10 +89,10 @@ Raw.data$Extraction.from.blue.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samp
 #Assigning First Orange Volume (in mL) as 10 for dirt/soil samples and 5 for all other samples (caterpillar, leaf, blank)
 Raw.data$First.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples,soil.samples.diluted,soil.controls,soil.controls.diluted), 10, 5))
 
-#Assigning Extraction from Orange (in mL) as 0.5 for dilluted dirt/soil samples and NA for all other samples (caterpillar, leaf, blank, nondilluted dirt/soil)
+#Assigning Extraction from Orange (in mL) as 0.5 for diluted dirt/soil samples and NA for all other samples (caterpillar, leaf, blank, nondiluted dirt/soil)
 Raw.data$Extraction.from.Orange.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples.diluted,soil.controls.diluted), 0.5, NA))
 
-#Assigning Second Orange Volume (in mL) as 5 for dilluted dirt/soil samples and NA for all other samples (caterpillar, leaf, blank, nondilluted dirt/soil)
+#Assigning Second Orange Volume (in mL) as 5 for diluted dirt/soil samples and NA for all other samples (caterpillar, leaf, blank, nondiluted dirt/soil)
 Raw.data$Second.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples.diluted,soil.controls.diluted), 5, NA))
 
 str(Raw.data)
@@ -101,16 +101,16 @@ str(Raw.data)
 
 #Calculating PPM for each element
 
-The use of once dilluted versus twice dilluted data per element is determined based on the raw input from the machine. When the concentration AVG output by the machine is out of the detectable range for that element, use the twice dilluted data (elements: lead, vanadium, chromium, manganese, copper zinc; NOT cadmium or nickel). 
+The use of once diluted versus twice diluted data per element is determined based on the raw input from the machine. When the concentration AVG output by the machine is out of the detectable range for that element, use the twice diluted data (elements: lead, vanadium, chromium, manganese, copper zinc; NOT cadmium or nickel). 
 
 
 ##PPM for Cadmium
 
 ```{r}
-#PPM of Cd in sample for all samples (note, ignore TWICE dilluted dirt/soil samples)
+#PPM of Cd in sample for all samples (note, ignore TWICE diluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Cd.in.sample=Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-#ignore TWICE dilluted dirt/soil samples because they are inaccurate
+#ignore TWICE diluted dirt/soil samples because they are inaccurate
 Raw.data$PPM.Cd.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
 ```
 
@@ -118,63 +118,50 @@ Raw.data$PPM.Cd.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample
 ##PPM for Lead
 
 ```{r}
-#PPM of Pb in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
+#PPM of Pb in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Pb.in.sample=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
 
-#PPM of Pb in sample for twice dilluted dirt/soil samples
-PPM.Pb.in.dilluted.dirt=(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
+#PPM of Pb in sample for twice diluted dirt/soil samples
+PPM.Pb.in.diluted.dirt=(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
 
-Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.Pb.in.dilluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
+Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.Pb.in.diluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
 
 Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =="soil.control"]<-NA
 
 
 
+##Oginial way I was doing things:
+#Raw.data<-Raw.data%>%mutate(PPM.Pb.in.diluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
 
-#Raw.data<-Raw.data%>%mutate(PPM.Pb.in.dilluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-
-#Raw.data<-Raw.data%>%mutate(PPM.Pb.in.dilluted.dirt=PPM.Pb.in.dilluted.dirt/1000)
-
-####Raw.data$PPM.Pb.in.dilluted.dirt<-0
-####Raw.data$PPM.Pb.in.dilluted.dirt<-(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-
-####Raw.data$PPM.Pb.divided.1000<-(Raw.data$PPM.Pb.in.dilluted.dirt/1000)
-
-
-
-
-####Raw.data$PPM.Pb.in.sample<-(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
-
+#Raw.data<-Raw.data%>%mutate(PPM.Pb.in.diluted.dirt=PPM.Pb.in.diluted.dirt/1000)
 ```
 
 
 ##PPM for Vanadium
 
 ```{r}
-#PPM of V in sample for twice dilluted dirt/soil samples
-Raw.data<-Raw.data%>%mutate(PPM.V.in.dilluted.dirt=Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-Raw.data<-Raw.data%>%mutate(PPM.V.in.dilluted.dirt=PPM.V.in.dilluted.dirt/1000)
-
-#####Raw.data$PPM.V.in.dilluted.dirt<-(Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-
-#PPM of V in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
-
+#PPM of V in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.V.in.sample=Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-#####Raw.data$PPM.V.in.sample<-(Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL))
 
+#PPM of V in sample for twice diluted dirt/soil samples
+PPM.V.in.diluted.dirt=(Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
+
+Raw.data$PPM.V.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.Pb.in.diluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
+
+Raw.data$PPM.V.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =="soil.control"]<-NA
 ```
 
 
 ##PPM for Chromium
 
 ```{r}
-#PPM of Cr in sample for twice dilluted dirt/soil samples
-Raw.data<-Raw.data%>%mutate(PPM.Cr.in.dilluted.dirt=Raw.data$Cr52.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-Raw.data<-Raw.data%>%mutate(PPM.Cr.in.dilluted.dirt=PPM.Cr.in.dilluted.dirt/1000)
+#PPM of Cr in sample for twice diluted dirt/soil samples
+Raw.data<-Raw.data%>%mutate(PPM.Cr.in.diluted.dirt=Raw.data$Cr52.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
+Raw.data<-Raw.data%>%mutate(PPM.Cr.in.diluted.dirt=PPM.Cr.in.diluted.dirt/1000)
 
-#PPM of Cr in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
+#PPM of Cr in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
 
 Raw.data<-Raw.data%>%mutate(PPM.Cr.in.sample=Raw.data$Cr52.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
@@ -184,11 +171,11 @@ Raw.data<-Raw.data%>%mutate(PPM.Cr.in.sample=Raw.data$Cr52.MR.*(Raw.data$Final.B
 ##PPM for Manganese
 
 ```{r}
-#PPM of Mn in sample for twice dilluted dirt/soil samples
-Raw.data<-Raw.data%>%mutate(PPM.Mn.in.dilluted.dirt=Raw.data$Mn55.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-Raw.data<-Raw.data%>%mutate(PPM.Mn.in.dilluted.dirt=PPM.Mn.in.dilluted.dirt/1000)
+#PPM of Mn in sample for twice diluted dirt/soil samples
+Raw.data<-Raw.data%>%mutate(PPM.Mn.in.diluted.dirt=Raw.data$Mn55.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
+Raw.data<-Raw.data%>%mutate(PPM.Mn.in.diluted.dirt=PPM.Mn.in.diluted.dirt/1000)
 
-#PPM of Mn in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
+#PPM of Mn in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
 
 Raw.data<-Raw.data%>%mutate(PPM.Mn.in.sample=Raw.data$Mn55.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 ```
@@ -197,10 +184,10 @@ Raw.data<-Raw.data%>%mutate(PPM.Mn.in.sample=Raw.data$Mn55.MR.*(Raw.data$Final.B
 ##PPM for Nickel
 
 ```{r}
-#PPM of Ni in sample for all samples (note, ignore TWICE dilluted dirt/soil samples)
+#PPM of Ni in sample for all samples (note, ignore TWICE diluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Ni.in.sample=Raw.data$Ni60.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-#ignore TWICE dilluted dirt/soil samples because they are inaccurate
+#ignore TWICE diluted dirt/soil samples because they are inaccurate
 Raw.data$PPM.Ni.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
 
 ```
@@ -209,11 +196,11 @@ Raw.data$PPM.Ni.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample
 ##PPM for Copper
 
 ```{r}
-#PPM of Cu in sample for twice dilluted dirt/soil samples
-Raw.data<-Raw.data%>%mutate(PPM.Cu.in.dilluted.dirt=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-Raw.data<-Raw.data%>%mutate(PPM.Cu.in.dilluted.dirt=PPM.Cu.in.dilluted.dirt/1000)
+#PPM of Cu in sample for twice diluted dirt/soil samples
+Raw.data<-Raw.data%>%mutate(PPM.Cu.in.diluted.dirt=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
+Raw.data<-Raw.data%>%mutate(PPM.Cu.in.diluted.dirt=PPM.Cu.in.diluted.dirt/1000)
 
-#PPM of Cu in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
+#PPM of Cu in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
 
 Raw.data<-Raw.data%>%mutate(PPM.Cu.in.sample=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 ```
@@ -222,11 +209,11 @@ Raw.data<-Raw.data%>%mutate(PPM.Cu.in.sample=Raw.data$Cu63.MR.*(Raw.data$Final.B
 ##PPM for Zinc
 
 ```{r}
-#PPM of Zn in sample for twice dilluted dirt/soil samples
-Raw.data<-Raw.data%>%mutate(PPM.Zn.in.dilluted.dirt=Raw.data$Zn66.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-Raw.data<-Raw.data%>%mutate(PPM.Zn.in.dilluted.dirt=PPM.Zn.in.dilluted.dirt/1000)
+#PPM of Zn in sample for twice diluted dirt/soil samples
+Raw.data<-Raw.data%>%mutate(PPM.Zn.in.diluted.dirt=Raw.data$Zn66.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
+Raw.data<-Raw.data%>%mutate(PPM.Zn.in.diluted.dirt=PPM.Zn.in.diluted.dirt/1000)
 
-#PPM of Zn in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
+#PPM of Zn in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
 
 Raw.data<-Raw.data%>%mutate(PPM.Zn.in.sample=Raw.data$Zn66.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 ```
