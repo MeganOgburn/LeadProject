@@ -110,22 +110,14 @@ The use of once dilluted versus twice dilluted data per element is determined ba
 #PPM of Cd in sample for all samples (note, ignore TWICE dilluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Cd.in.sample=Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-#ignore TWICE dilluted dirt/soil samples because...
+#ignore TWICE dilluted dirt/soil samples because they are inaccurate
 Raw.data$PPM.Cd.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
-
-#Raw.data$PPM.Cd.in.sample<-NA
-
-#Raw.data$PPM.Cd.in.sample<-(Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL))
-
 ```
 
 
 ##PPM for Lead
 
 ```{r}
-
-
-
 #PPM of Pb in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Pb.in.sample=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
@@ -207,6 +199,9 @@ Raw.data<-Raw.data%>%mutate(PPM.Mn.in.sample=Raw.data$Mn55.MR.*(Raw.data$Final.B
 ```{r}
 #PPM of Ni in sample for all samples (note, ignore TWICE dilluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Ni.in.sample=Raw.data$Ni60.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+#ignore TWICE dilluted dirt/soil samples because they are inaccurate
+Raw.data$PPM.Ni.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
 
 ```
 
