@@ -20,6 +20,30 @@ In total there are 47 samples in the data set: dirt x 10 + caterpillar x 10 + le
 library(tidyverse)
 Raw.data<-read.csv("./Data/Raw_lead_data_for_R.csv", header=TRUE)
 Raw.data<-as.data.frame(Raw.data)
+
+
+#make vectors by sample type
+soil.samples<-c("S001D","S002D","S003D","S004D","S005D","S006D","S007D","S008D","S009D","S010D")
+soil.controls<-c("Buffalo River","Dirt1","Dirt2")
+soil.controls.diluted<-c("Buffalo River_x10")
+soil.samples.diluted<-c("S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10")
+cata.samples<-c("S001C","S002C","S003C","S004C","S005C","S006C","S007C","S008C","S009C","S010C")
+leaf.samples<-c("S001L","S002L","S003L","S004L","S005L","S006L","S007L","S008L","S009L","S010L")
+leaf.controls<-c("MW1","MW2")
+method.blanks<-c("Method Blank")
+
+sample.type.df<-rbind(data.frame(Sample.ID =soil.samples,Sample.type = "soil"),
+      data.frame(Sample.ID =soil.controls,Sample.type = "soil.control"),
+      data.frame(Sample.ID =soil.controls.diluted,Sample.type = "soil.control.diluted"),
+      data.frame(Sample.ID =soil.samples.diluted,Sample.type = "soil.diluted"),
+      data.frame(Sample.ID =cata.samples,Sample.type = "cata"),
+      data.frame(Sample.ID =leaf.samples,Sample.type = "leaf"),
+      data.frame(Sample.ID =leaf.controls,Sample.type = "leaf.control"),
+      data.frame(Sample.ID =method.blanks,Sample.type = "method.blank"))
+
+sample.type.df$Sample.ID<-factor(sample.type.df$Sample.ID,levels=levels(Raw.data$Sample.ID))
+Raw.data <- Raw.data %>% left_join(sample.type.df,by="Sample.ID")
+
 ```
 
 #Visualizing the data
@@ -49,12 +73,13 @@ Raw.data$X.9<-NULL
 Raw.data$In115.MR.<-NULL
 Raw.data$X.10<-NULL
 
+
 #Creating columns for calculations
 samples<-summary(Raw.data$Sample.ID)
 names(samples)
 
 #Assigning Final blue volume (in mL) as 15 mL for dirt/soil samples and 5 mL for all other samples (caterpillar, leaf, blank)
-Raw.data$Final.Blue.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c("S001D","S002D","S003D","S004D","S005D","S006D","S007D","S008D","S009D","S010D","Buffalo River","Dirt1","Dirt2","S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10"), 15, 5))
+Raw.data$Final.Blue.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samples,soil.samples.diluted,soil.controls,soil.controls.diluted), 15, 5))
 
 #Assigning Extraction from blue (in mL) as 0.2 for dirt/soil samples and 2.5 for all other samples (caterpillar, leaf, blank)
 Raw.data$Extraction.from.blue.in.mL<-(ifelse(Raw.data$Sample.ID %in% c("S001D","S002D","S003D","S004D","S005D","S006D","S007D","S008D","S009D","S010D","Buffalo River","Dirt1","Dirt2","S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10"), 0.2, 2.5))
@@ -83,6 +108,9 @@ The use of once dilluted versus twice dilluted data per element is determined ba
 #PPM of Cd in sample for all samples (note, ignore TWICE dilluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Cd.in.sample=Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
+#ignore TWICE dilluted dirt/soil samples because...
+Raw.data$PPM.Cd.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
+
 #Raw.data$PPM.Cd.in.sample<-NA
 
 #Raw.data$PPM.Cd.in.sample<-(Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL))
@@ -93,18 +121,34 @@ Raw.data<-Raw.data%>%mutate(PPM.Cd.in.sample=Raw.data$Cd111.LR.*(Raw.data$Final.
 ##PPM for Lead
 
 ```{r}
+
+
+
+#PPM of Pb in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
+Raw.data<-Raw.data%>%mutate(PPM.Pb.in.sample=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+
 #PPM of Pb in sample for twice dilluted dirt/soil samples
-Raw.data<-Raw.data%>%mutate(PPM.Pb.in.dilluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
-Raw.data<-Raw.data%>%mutate(PPM.Pb.in.dilluted.dirt=PPM.Pb.in.dilluted.dirt/1000)
+PPM.Pb.in.dilluted.dirt=(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
+
+Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.Pb.in.dilluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
+
+Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =="soil.control"]<-NA
+
+
+
+
+#Raw.data<-Raw.data%>%mutate(PPM.Pb.in.dilluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
+
+#Raw.data<-Raw.data%>%mutate(PPM.Pb.in.dilluted.dirt=PPM.Pb.in.dilluted.dirt/1000)
 
 ####Raw.data$PPM.Pb.in.dilluted.dirt<-0
 ####Raw.data$PPM.Pb.in.dilluted.dirt<-(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
 
 ####Raw.data$PPM.Pb.divided.1000<-(Raw.data$PPM.Pb.in.dilluted.dirt/1000)
 
-#PPM of Pb in sample for caterpillar and leaf samples (note, ignore TWICE dilluted dirt/soil samples)
 
-Raw.data<-Raw.data%>%mutate(PPM.Pb.in.sample=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
 
 ####Raw.data$PPM.Pb.in.sample<-(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
@@ -194,25 +238,25 @@ Raw.data<-Raw.data%>%mutate(PPM.Zn.in.sample=Raw.data$Zn66.MR.*(Raw.data$Final.B
 #Seeing only "Concentration AVG"" from "Isotopes" column
 
 ```{r}
-Concentration.AVG=Raw.data[seq(4, nrow(Raw.data), 6), ]
-Concentration.AVG$Isotope<-NULL
-Concentration.AVG$Mass..in.g.of.digested.sample.<-NULL
-Concentration.AVG$Cd111.LR.<-NULL
-Concentration.AVG$Pb208.LR.<-NULL
-Concentration.AVG$V51.MR.<-NULL
-Concentration.AVG$Cr52.MR.<-NULL
-Concentration.AVG$Mn55.MR.<-NULL
-Concentration.AVG$Ni60.MR.<-NULL
-Concentration.AVG$Cu63.MR.<-NULL
-Concentration.AVG$Zn66.MR.<-NULL
-Concentration.AVG$Final.Blue.Volume.in.mL<-NULL
-Concentration.AVG$Extraction.from.blue.in.mL<-NULL
-Concentration.AVG$First.Orange.Volume.in.mL<-NULL
-Concentration.AVG$Extraction.from.Orange.in.mL<-NULL
-Concentration.AVG$Second.Orange.Volume.in.mL<-NULL
-str(Concentration.AVG)
-
-Concentration.AVG<-as.data.frame(Concentration.AVG)
+Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% select(Sample.ID,Sample.type,PPM.Cd.in.sample,PPM.Pb.in.sample)
+  
+# Concentration.AVG$Mass..in.g.of.digested.sample.<-NULL
+# Concentration.AVG$Cd111.LR.<-NULL
+# Concentration.AVG$Pb208.LR.<-NULL
+# Concentration.AVG$V51.MR.<-NULL
+# Concentration.AVG$Cr52.MR.<-NULL
+# Concentration.AVG$Mn55.MR.<-NULL
+# Concentration.AVG$Ni60.MR.<-NULL
+# Concentration.AVG$Cu63.MR.<-NULL
+# Concentration.AVG$Zn66.MR.<-NULL
+# Concentration.AVG$Final.Blue.Volume.in.mL<-NULL
+# Concentration.AVG$Extraction.from.blue.in.mL<-NULL
+# Concentration.AVG$First.Orange.Volume.in.mL<-NULL
+# Concentration.AVG$Extraction.from.Orange.in.mL<-NULL
+# Concentration.AVG$Second.Orange.Volume.in.mL<-NULL
+# str(Concentration.AVG)
+# 
+# Concentration.AVG<-as.data.frame(Concentration.AVG)
 ```
 
 
@@ -249,6 +293,10 @@ In his paper in 1999 Mielke found these urban soil ppm 120 Pb, 130 Zn, 3.2 Cd, 1
 
 ```{r}
 #Average leaf concentration
+sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(PPM.Cd.in.sample),
+                                                          meanPb=mean(PPM.Pb.in.sample))
+
+
 
 #Making a dataframe of just leaf samples to try and take the average (since taking the average of part of a dataframe wasn't working for me)
 Concentration.AVG.Leaf=Concentration.AVG$Sample.ID %in%c("S001L","S002L","S003L","S004L","S005L","S006L","S007L","S008L","S009L","S010L")
