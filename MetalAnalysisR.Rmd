@@ -131,7 +131,7 @@ Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =
 
 
 
-##Oginial way I was doing things:
+##Original way I was doing things:
 #Raw.data<-Raw.data%>%mutate(PPM.Pb.in.diluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
 
 #Raw.data<-Raw.data%>%mutate(PPM.Pb.in.diluted.dirt=PPM.Pb.in.diluted.dirt/1000)
@@ -204,7 +204,7 @@ Raw.data$PPM.Ni.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample
 Raw.data<-Raw.data%>%mutate(PPM.Cu.in.sample=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
 
-#PPM of PCu in sample for twice diluted dirt/soil samples
+#PPM of Cu in sample for twice diluted dirt/soil samples
 PPM.Cu.in.diluted.dirt=(Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
 
 Raw.data$PPM.Cu.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.Cu.in.diluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
@@ -232,8 +232,10 @@ Raw.data$PPM.Zn.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =
 #Seeing only "Concentration AVG"" from "Isotopes" column
 
 ```{r}
-Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% select(Sample.ID,Sample.type,PPM.Cd.in.sample,PPM.Pb.in.sample)
+Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample)
   
+
+##Original way I was doing things:
 # Concentration.AVG$Mass..in.g.of.digested.sample.<-NULL
 # Concentration.AVG$Cd111.LR.<-NULL
 # Concentration.AVG$Pb208.LR.<-NULL
@@ -257,25 +259,28 @@ Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% selec
 #Seeing only "Concentration STD"" from "Isotopes" column
 
 ```{r}
-Concentration.STD=Raw.data[seq(5, nrow(Raw.data), 6), ]
-Concentration.STD$Isotope<-NULL
-Concentration.STD$Mass..in.g.of.digested.sample.<-NULL
-Concentration.STD$Cd111.LR.<-NULL
-Concentration.STD$Pb208.LR.<-NULL
-Concentration.STD$V51.MR.<-NULL
-Concentration.STD$Cr52.MR.<-NULL
-Concentration.STD$Mn55.MR.<-NULL
-Concentration.STD$Ni60.MR.<-NULL
-Concentration.STD$Cu63.MR.<-NULL
-Concentration.STD$Zn66.MR.<-NULL
-Concentration.STD$Final.Blue.Volume.in.mL<-NULL
-Concentration.STD$Extraction.from.blue.in.mL<-NULL
-Concentration.STD$First.Orange.Volume.in.mL<-NULL
-Concentration.STD$Extraction.from.Orange.in.mL<-NULL
-Concentration.STD$Second.Orange.Volume.in.mL<-NULL
-str(Concentration.STD)
+Concentration.STD <- Raw.data %>% filter(Isotope=="Concentration STD") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample)
 
-Concentration.STD<-as.data.frame(Concentration.STD)
+##Original way I was doing things:
+#Concentration.STD=Raw.data[seq(5, nrow(Raw.data), 6), ]
+#Concentration.STD$Isotope<-NULL
+#Concentration.STD$Mass..in.g.of.digested.sample.<-NULL
+#Concentration.STD$Cd111.LR.<-NULL
+#Concentration.STD$Pb208.LR.<-NULL
+#Concentration.STD$V51.MR.<-NULL
+#Concentration.STD$Cr52.MR.<-NULL
+#Concentration.STD$Mn55.MR.<-NULL
+#Concentration.STD$Ni60.MR.<-NULL
+#Concentration.STD$Cu63.MR.<-NULL
+#Concentration.STD$Zn66.MR.<-NULL
+#Concentration.STD$Final.Blue.Volume.in.mL<-NULL
+#Concentration.STD$Extraction.from.blue.in.mL<-NULL
+#Concentration.STD$First.Orange.Volume.in.mL<-NULL
+#Concentration.STD$Extraction.from.Orange.in.mL<-NULL
+#Concentration.STD$Second.Orange.Volume.in.mL<-NULL
+#str(Concentration.STD)
+#
+#Concentration.STD<-as.data.frame(Concentration.STD)
 ```
 
 
