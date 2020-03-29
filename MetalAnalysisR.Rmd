@@ -46,6 +46,13 @@ sample.type.df<-rbind(data.frame(Sample.ID =soil.samples,Sample.type = "soil"),
 sample.type.df$Sample.ID<-factor(sample.type.df$Sample.ID,levels=levels(Raw.data$Sample.ID))
 Raw.data <- Raw.data %>% left_join(sample.type.df,by="Sample.ID")
 
+#Left join new excel file "LeadSiteID.csv" by Sample.ID
+LeadSiteID<-read.csv("./Data/LeadSiteID.csv", header=TRUE)
+LeadSiteID<-as.data.frame(LeadSiteID)
+LeadSiteID$Sample.ID<-factor(LeadSiteID$Sample.ID,levels=levels(Raw.data$Sample.ID))
+LeadSiteID$Site.ID<-factor(LeadSiteID$Site.ID)
+
+Raw.data <- Raw.data %>% left_join(LeadSiteID, by="Sample.ID")
 ```
 
 #Visualizing the data
@@ -288,7 +295,7 @@ Concentration.STD <- Raw.data %>% filter(Isotope=="Concentration STD") %>% selec
 
 In his paper in 1999 Mielke found these urban soil PPM 120 Pb, 130 Zn, 3.2 Cd, 138 Mn, 2.1 Cr, 9.8 Ni, 3.8 V, and 12.7 Cu.
 
-I found soil PPMs of: 333 Pb (higher), 46 Zn (lower), 1.7 Cd (lower), 356 Mn (higher), 13 Cr (higher), 21 Ni (higher), 8 V (higher), 46 Cu (higher).
+I found soil PPMs of: 333 Pb (higher), 474 Zn (higher), 1.7 Cd (lower), 356 Mn (higher), 13 Cr (higher), 21 Ni (higher), 8 V (higher), 46 Cu (higher).
 
 ```{r}
 #Average leaf concentration
@@ -299,6 +306,29 @@ sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(P
           meanMn=mean(PPM.Mn.in.sample),
           meanNi=mean(PPM.Ni.in.sample),
           meanCu=mean(PPM.Cu.in.sample),
-          meanZn=mean(PPM.Cu.in.sample))
-str(sum.AVG)
+          meanZn=mean(PPM.Zn.in.sample))
+
+#Histogram of Cd leaf concentrations
+hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Cd concentrations", xlab="Cd concentration")
+
+#Histogram of Pb leaf concentrations
+hist(Concentration.AVG$PPM.Pb.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Pb concentrations", xlab="Pb concentration")
+
+#Histogram of V leaf concentrations
+hist(Concentration.AVG$PPM.V.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf V concentrations", xlab="V concentration")
+
+#Histogram of Cr leaf concentrations
+hist(Concentration.AVG$PPM.Cr.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Cr concentrations", xlab="Cr concentration")
+
+#Histogram of Mn leaf concentrations
+hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Pb concentrations", xlab="Mn concentration")
+
+#Histogram of Ni leaf concentrations
+hist(Concentration.AVG$PPM.Ni.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Ni concentrations", xlab="Ni concentration")
+
+#Histogram of Cu leaf concentrations
+hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Cu concentrations", xlab="Cu concentration")
+
+#Histogram of Zn leaf concentrations
+hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Zn concentrations", xlab="Zn concentration")
 ```
