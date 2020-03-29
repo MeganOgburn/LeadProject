@@ -286,27 +286,19 @@ Concentration.STD <- Raw.data %>% filter(Isotope=="Concentration STD") %>% selec
 
 #Understanding the data
 
+In his paper in 1999 Mielke found these urban soil PPM 120 Pb, 130 Zn, 3.2 Cd, 138 Mn, 2.1 Cr, 9.8 Ni, 3.8 V, and 12.7 Cu.
 
-In his paper in 1999 Mielke found these urban soil ppm 120 Pb, 130 Zn, 3.2 Cd, 138 Mn, 2.1 Cr, 9.8 Ni, 3.8 V, and 12.7 Cu.
-
+I found soil PPMs of: 333 Pb (higher), 46 Zn (lower), 1.7 Cd (lower), 356 Mn (higher), 13 Cr (higher), 21 Ni (higher), 8 V (higher), 46 Cu (higher).
 
 ```{r}
 #Average leaf concentration
 sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(PPM.Cd.in.sample),
-          meanPb=mean(PPM.Pb.in.sample))
-
-
-
-#Making a dataframe of just leaf samples to try and take the average (since taking the average of part of a dataframe wasn't working for me)
-Concentration.AVG.Leaf=Concentration.AVG$Sample.ID %in%c("S001L","S002L","S003L","S004L","S005L","S006L","S007L","S008L","S009L","S010L")
-Concentration.AVG.Leaf<-as.data.frame(Concentration.AVG.Leaf)
-
-mean(Concentration.AVG.Leaf$PPM.Cd.in.sample)
-
-###df<-ifelse(Concentration.AVG$Sample.ID %in% c("S001D","S002D","S003D","S004D","S005D","S006D","S007D","S008D","S009D","S010D","Buffalo River","Dirt1","Dirt2","S001D_x10","S002D_x10","S003D_x10","S004D_x10","S005D_x10","S006D_x10","S007D_x10","S008D_x10","S009D_x10","S010D_x10"), mean, NA)
-
-####df<-with(Concentration.AVG, mean(PPM.Cd.in.sample[c(Sample.ID=="S001L",Sample.ID=="S002L")]))
-
-####Concentration.AVG<-Concentration.AVG%>%mutate(CTR_AVG_L=(Concentration.AVG$S001L + Concentration.AVG$S002L + Concentration.AVG$S003L ) / 3)
-
+          meanPb=mean(PPM.Pb.in.sample),
+          meanV=mean(PPM.V.in.sample),
+          meanCr=mean(PPM.Cr.in.sample),
+          meanMn=mean(PPM.Mn.in.sample),
+          meanNi=mean(PPM.Ni.in.sample),
+          meanCu=mean(PPM.Cu.in.sample),
+          meanZn=mean(PPM.Cu.in.sample))
+str(sum.AVG)
 ```
