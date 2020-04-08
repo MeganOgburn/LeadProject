@@ -239,7 +239,7 @@ Raw.data$PPM.Zn.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =
 #Seeing only "Concentration AVG"" from "Isotopes" column
 
 ```{r}
-Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample)
+Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample, Site.ID)
   
 
 ##Original way I was doing things:
@@ -266,7 +266,7 @@ Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% selec
 #Seeing only "Concentration STD"" from "Isotopes" column
 
 ```{r}
-Concentration.STD <- Raw.data %>% filter(Isotope=="Concentration STD") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample)
+Concentration.STD <- Raw.data %>% filter(Isotope=="Concentration STD") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample, Site.ID)
 
 ##Original way I was doing things:
 #Concentration.STD=Raw.data[seq(5, nrow(Raw.data), 6), ]
@@ -308,6 +308,8 @@ sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(P
           meanCu=mean(PPM.Cu.in.sample),
           meanZn=mean(PPM.Zn.in.sample))
 
+#LEAF CONCENTRATIONS
+
 #Histogram of Cd leaf concentrations
 hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Cd concentrations", xlab="Cd concentration")
 
@@ -321,7 +323,7 @@ hist(Concentration.AVG$PPM.V.in.sample[Concentration.AVG$Sample.type == "leaf"],
 hist(Concentration.AVG$PPM.Cr.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Cr concentrations", xlab="Cr concentration")
 
 #Histogram of Mn leaf concentrations
-hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Pb concentrations", xlab="Mn concentration")
+hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Mn concentrations", xlab="Mn concentration")
 
 #Histogram of Ni leaf concentrations
 hist(Concentration.AVG$PPM.Ni.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Ni concentrations", xlab="Ni concentration")
@@ -331,4 +333,100 @@ hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "leaf"]
 
 #Histogram of Zn leaf concentrations
 hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Zn concentrations", xlab="Zn concentration")
+
+
+#DIRT CONCENTRATIONS
+
+#Histogram of Cd dirt concentrations
+hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Cd concentrations", xlab="Cd concentration")
+
+#Histogram of Pb dirt concentrations
+hist(Concentration.AVG$PPM.Pb.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Pb concentrations", xlab="Pb concentration")
+
+#Histogram of V dirt concentrations
+hist(Concentration.AVG$PPM.V.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt V concentrations", xlab="V concentration")
+
+#Histogram of Cr dirt concentrations
+hist(Concentration.AVG$PPM.Cr.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Cr concentrations", xlab="Cr concentration")
+
+#Histogram of Mn dirt concentrations
+hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Pb concentrations", xlab="Mn concentration")
+
+#Histogram of Ni dirt concentrations
+hist(Concentration.AVG$PPM.Ni.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Ni concentrations", xlab="Ni concentration")
+
+#Histogram of Cu dirt concentrations
+hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Cu concentrations", xlab="Cu concentration")
+
+#Histogram of Zn dirt concentrations
+hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Zn concentrations", xlab="Zn concentration")
+
+
+#CATERPILLAR CONCENTRATIONS
+
+#Histogram of Cd caterpillar concentrations
+hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Cd concentrations", xlab="Cd concentration")
+
+#Histogram of Pb caterpillar concentrations
+hist(Concentration.AVG$PPM.Pb.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Pb concentrations", xlab="Pb concentration")
+
+#Histogram of V caterpillar concentrations
+hist(Concentration.AVG$PPM.V.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar V concentrations", xlab="V concentration")
+
+#Histogram of Cr caterpillar concentrations
+hist(Concentration.AVG$PPM.Cr.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Cr concentrations", xlab="Cr concentration")
+
+#Histogram of Mn caterpillar concentrations
+hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Pb concentrations", xlab="Mn concentration")
+
+#Histogram of Ni caterpillar concentrations
+hist(Concentration.AVG$PPM.Ni.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Ni concentrations", xlab="Ni concentration")
+
+#Histogram of Cu caterpillar concentrations
+hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Cu concentrations", xlab="Cu concentration")
+
+#Histogram of Zn caterpillar concentrations
+hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Zn concentrations", xlab="Zn concentration")
 ```
+
+
+#Making graphs
+
+```{r}
+library(ggplot2)
+
+#df <- data.frame(
+#  x=Concentration.AVG$Site.ID,
+#  y=Concentration.AVG$PPM.Cd.in.sample
+#)
+#
+#ggplot(data=df, aes(x,y)) +
+#  geom_col(
+#    mapping = NULL,
+#    data = NULL,
+#    position = "stack",
+#    width = NULL,
+#    na.rm = FALSE,
+#    show.legend = NA,
+#    inherit.aes = TRUE
+#  )
+
+
+df <- data.frame(
+  x=Concentration.AVG %>% group_by(Site.ID),
+  y=Concentration.AVG$PPM.Pb.in.sample
+)
+
+ggplot(data=Concentration.AVG, aes(x=Site.ID,y=PPM.Pb.in.sample)) +
+  geom_col(
+    mapping = NULL,
+    data = NULL,
+    position = position_dodge(),
+    width = NULL,
+    na.rm = TRUE,
+    show.legend = NA,
+    inherit.aes = TRUE
+  )
+
+```
+
