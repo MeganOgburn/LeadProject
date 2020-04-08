@@ -341,25 +341,25 @@ hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "leaf"]
 hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Cd concentrations", xlab="Cd concentration")
 
 #Histogram of Pb dirt concentrations
-hist(Concentration.AVG$PPM.Pb.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Pb concentrations", xlab="Pb concentration")
+hist(Concentration.AVG$PPM.Pb.in.sample[Concentration.AVG$Sample.type == "soil.diluted"], main="Histogram of dirt Pb concentrations", xlab="Pb concentration")
 
 #Histogram of V dirt concentrations
-hist(Concentration.AVG$PPM.V.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt V concentrations", xlab="V concentration")
+hist(Concentration.AVG$PPM.V.in.sample[Concentration.AVG$Sample.type == "soil.diluted"], main="Histogram of dirt V concentrations", xlab="V concentration")
 
 #Histogram of Cr dirt concentrations
-hist(Concentration.AVG$PPM.Cr.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Cr concentrations", xlab="Cr concentration")
+hist(Concentration.AVG$PPM.Cr.in.sample[Concentration.AVG$Sample.type == "soil.diluted"], main="Histogram of dirt Cr concentrations", xlab="Cr concentration")
 
 #Histogram of Mn dirt concentrations
-hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Pb concentrations", xlab="Mn concentration")
+hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "soil.diluted"], main="Histogram of dirt Pb concentrations", xlab="Mn concentration")
 
 #Histogram of Ni dirt concentrations
 hist(Concentration.AVG$PPM.Ni.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Ni concentrations", xlab="Ni concentration")
 
 #Histogram of Cu dirt concentrations
-hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Cu concentrations", xlab="Cu concentration")
+hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "soil.diluted"], main="Histogram of dirt Cu concentrations", xlab="Cu concentration")
 
 #Histogram of Zn dirt concentrations
-hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Zn concentrations", xlab="Zn concentration")
+hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "soil.diluted"], main="Histogram of dirt Zn concentrations", xlab="Zn concentration")
 
 
 #CATERPILLAR CONCENTRATIONS
@@ -412,21 +412,46 @@ library(ggplot2)
 #  )
 
 
-df <- data.frame(
-  x=Concentration.AVG %>% group_by(Site.ID),
-  y=Concentration.AVG$PPM.Pb.in.sample
-)
+#df <- data.frame(
+#  x=Concentration.AVG %>% group_by(Site.ID),
+#  y=Concentration.AVG$PPM.Pb.in.sample
+#)
+#
+#ggplot(data=Concentration.AVG, aes(x=Site.ID,y=PPM.Pb.in.sample)) +
+#  geom_col(
+#    mapping = NULL,
+#    data = NULL,
+#    position = position_dodge(),
+#    width = NULL,
+#    na.rm = TRUE,
+#    show.legend = NA,
+#    inherit.aes = TRUE
+#  )
 
-ggplot(data=Concentration.AVG, aes(x=Site.ID,y=PPM.Pb.in.sample)) +
-  geom_col(
-    mapping = NULL,
-    data = NULL,
-    position = position_dodge(),
-    width = NULL,
-    na.rm = TRUE,
-    show.legend = NA,
-    inherit.aes = TRUE
-  )
+tidyConc <- Concentration.AVG %>% gather("metal", "concentration", -Sample.ID, -Site.ID, -Sample.type)
+
+ggplot(data=tidyConc %>% filter((Sample.type=="leaf" | Sample.type=="cata") & metal=="PPM.Cd.in.sample")) +
+  geom_col(aes(x=Site.ID, y=concentration, group=Sample.type, fill=Sample.type), position="dodge") +
+  theme(axis.text.x=element_text(angle=90))
+
+
+ggplot(data=tidyConc %>% filter((Sample.type=="leaf" | Sample.type=="cata" | Sample.type=="soil.diluted") & metal=="PPM.Cu.in.sample")) +
+  geom_col(aes(x=Site.ID, y=concentration, group=Sample.type, fill=Sample.type), position="dodge") +
+  theme(axis.text.x=element_text(angle=90))
+
+
+
+
+#test for correlation in Cu between leaves and caterpillars
+#this assumes leaf and caterpillar and soil samples are in the same order
+Cu.leaf <- tidyConc %>% filter((Sample.type=="leaf") & metal=="PPM.Cu.in.sample")
+Cu.cata <- tidyConc %>% filter((Sample.type=="cata") & metal=="PPM.Cu.in.sample")
+Cu.soil <- tidyConc %>% filter((Sample.type=="soil.diluted") & metal=="PPM.Cu.in.sample")
+cor.test(Cu.leaf$concentration, Cu.soil$concentration)
+
+#remerge leaf, cata, soil into a dataframe and redo correlation test would be a better way to do this (or using merge command) (left join by site ID)
+df<-left_join(Cu.leaf, Cu.cata, by="Site.ID")
+cor.test(df$concentration.x, df$concentration.y)
 
 ```
 
