@@ -106,6 +106,52 @@ str(Raw.data)
 
 ```
 
+
+#Calculating PPM for Buffalo River Controls
+
+```{r}
+#PPM of Cd in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.Cd.in.buffalo=Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.Cd.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+
+#PPM of Pb in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.Pb.in.buffalo=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.Pb.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+
+#PPM of V in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.V.in.buffalo=Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.V.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+
+#PPM of Cr in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.Cr.in.buffalo=Raw.data$Cr52.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.Cr.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+
+#PPM of Mn in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.Mn.in.buffalo=Raw.data$Mn55.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.Mn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+
+#PPM of Ni in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.Ni.in.buffalo=Raw.data$Ni60.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.Ni.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+
+#PPM of Cu in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.Cu.in.buffalo=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.Cu.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+
+#PPM of Zn in Buffalo River Sediment for both dilutions
+Raw.data<-Raw.data%>%mutate(PPM.Zn.in.buffalo=Raw.data$Zn66.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+
+Raw.data$PPM.Zn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+```
+
+
 #Calculating PPM for each element
 
 The use of once diluted versus twice diluted data per element is determined based on the raw input from the machine. When the concentration AVG output by the machine is out of the detectable range for that element, use the twice diluted data (elements: lead, vanadium, chromium, manganese, copper zinc; NOT cadmium or nickel). 
@@ -307,9 +353,12 @@ sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(P
           meanNi=mean(PPM.Ni.in.sample),
           meanCu=mean(PPM.Cu.in.sample),
           meanZn=mean(PPM.Zn.in.sample))
+str(sum.AVG)
+```
 
-#LEAF CONCENTRATIONS
+##Leaf Concentration Histograms
 
+```{r}
 #Histogram of Cd leaf concentrations
 hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Cd concentrations", xlab="Cd concentration")
 
@@ -333,10 +382,12 @@ hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "leaf"]
 
 #Histogram of Zn leaf concentrations
 hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Zn concentrations", xlab="Zn concentration")
+```
 
 
-#DIRT CONCENTRATIONS
+##Dirt Concentration Histograms
 
+```{r}
 #Histogram of Cd dirt concentrations
 hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "soil"], main="Histogram of dirt Cd concentrations", xlab="Cd concentration")
 
@@ -360,10 +411,12 @@ hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "soil.d
 
 #Histogram of Zn dirt concentrations
 hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "soil.diluted"], main="Histogram of dirt Zn concentrations", xlab="Zn concentration")
+```
 
 
-#CATERPILLAR CONCENTRATIONS
+##Caterpillar Concentration Histograms
 
+```{r}
 #Histogram of Cd caterpillar concentrations
 hist(Concentration.AVG$PPM.Cd.in.sample[Concentration.AVG$Sample.type == "cata"], main="Histogram of caterpillar Cd concentrations", xlab="Cd concentration")
 
@@ -394,39 +447,6 @@ hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "cata"]
 
 ```{r}
 library(ggplot2)
-
-#df <- data.frame(
-#  x=Concentration.AVG$Site.ID,
-#  y=Concentration.AVG$PPM.Cd.in.sample
-#)
-#
-#ggplot(data=df, aes(x,y)) +
-#  geom_col(
-#    mapping = NULL,
-#    data = NULL,
-#    position = "stack",
-#    width = NULL,
-#    na.rm = FALSE,
-#    show.legend = NA,
-#    inherit.aes = TRUE
-#  )
-
-
-#df <- data.frame(
-#  x=Concentration.AVG %>% group_by(Site.ID),
-#  y=Concentration.AVG$PPM.Pb.in.sample
-#)
-#
-#ggplot(data=Concentration.AVG, aes(x=Site.ID,y=PPM.Pb.in.sample)) +
-#  geom_col(
-#    mapping = NULL,
-#    data = NULL,
-#    position = position_dodge(),
-#    width = NULL,
-#    na.rm = TRUE,
-#    show.legend = NA,
-#    inherit.aes = TRUE
-#  )
 
 tidyConc <- Concentration.AVG %>% gather("metal", "concentration", -Sample.ID, -Site.ID, -Sample.type)
 
