@@ -32,7 +32,7 @@ leaf.samples<-c("S001L","S002L","S003L","S004L","S005L","S006L","S007L","S008L",
 leaf.controls<-c("MW1","MW2")
 method.blanks<-c("Method Blank")
 
-#Making data fram of sample types
+#Making data frame of sample types
 sample.type.df<-rbind(data.frame(Sample.ID =soil.samples,Sample.type = "soil"),
       data.frame(Sample.ID =soil.controls,Sample.type = "soil.control"),
       data.frame(Sample.ID =soil.controls.diluted,Sample.type = "soil.control.diluted"),
@@ -285,7 +285,7 @@ Raw.data$PPM.Zn.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =
 #Seeing only "Concentration AVG"" from "Isotopes" column
 
 ```{r}
-Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample, Site.ID)
+Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% select(Sample.ID, Site.ID, Private.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample)
   
 
 ##Original way I was doing things:
@@ -312,7 +312,7 @@ Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% selec
 #Seeing only "Concentration STD"" from "Isotopes" column
 
 ```{r}
-Concentration.STD <- Raw.data %>% filter(Isotope=="Concentration STD") %>% select(Sample.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample, Site.ID)
+Concentration.STD <- Raw.data %>% filter(Isotope=="Concentration STD") %>% select(Sample.ID, Site.ID, Private.ID, Sample.type, PPM.Cd.in.sample, PPM.Pb.in.sample, PPM.V.in.sample, PPM.Cr.in.sample, PPM.Mn.in.sample, PPM.Ni.in.sample, PPM.Cu.in.sample, PPM.Zn.in.sample)
 
 ##Original way I was doing things:
 #Concentration.STD=Raw.data[seq(5, nrow(Raw.data), 6), ]
@@ -353,6 +353,65 @@ sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(P
           meanNi=mean(PPM.Ni.in.sample),
           meanCu=mean(PPM.Cu.in.sample),
           meanZn=mean(PPM.Zn.in.sample))
+          
+#Cd transfer factor = conc of leaf / conc of soil
+transfer.factor.Cd = sum.AVG$meanCd[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanCd[sum.AVG$Sample.type =="soil"]
+#Cd trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.Cd = sum.AVG$meanCd[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCd[sum.AVG$Sample.type =="leaf"]
+#Cd bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.Cd = sum.AVG$meanCd[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCd[sum.AVG$Sample.type =="soil"]
+
+#Pb transfer factor = conc of leaf / conc of soil
+transfer.factor.Pb = sum.AVG$meanPb[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanPb[sum.AVG$Sample.type =="soil.diluted"]
+#Pb trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.Pb = sum.AVG$meanPb[sum.AVG$Sample.type =="cata"] / sum.AVG$meanPb[sum.AVG$Sample.type =="leaf"]
+#Pb bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.Pb = sum.AVG$meanPb[sum.AVG$Sample.type =="cata"] / sum.AVG$meanPb[sum.AVG$Sample.type =="soil.diluted"]
+
+#V transfer factor = conc of leaf / conc of soil
+transfer.factor.V = sum.AVG$meanV[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanV[sum.AVG$Sample.type =="soil.diluted"]
+#V trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.V = sum.AVG$meanV[sum.AVG$Sample.type =="cata"] / sum.AVG$meanV[sum.AVG$Sample.type =="leaf"]
+#V bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.V = sum.AVG$meanV[sum.AVG$Sample.type =="cata"] / sum.AVG$meanV[sum.AVG$Sample.type =="soil.diluted"]
+
+#Cr transfer factor = conc of leaf / conc of soil
+transfer.factor.Cr = sum.AVG$meanCr[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanCr[sum.AVG$Sample.type =="soil"]
+#Cr trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.Cr = sum.AVG$meanCr[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCr[sum.AVG$Sample.type =="leaf"]
+#Cr bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.Cr = sum.AVG$meanCr[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCr[sum.AVG$Sample.type =="soil"]
+
+#Mn transfer factor = conc of leaf / conc of soil
+transfer.factor.Mn = sum.AVG$meanMn[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanMn[sum.AVG$Sample.type =="soil.diluted"]
+#Mn trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.Mn = sum.AVG$meanMn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanMn[sum.AVG$Sample.type =="leaf"]
+#Mn bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.Mn = sum.AVG$meanMn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanMn[sum.AVG$Sample.type =="soil.diluted"]
+
+#Ni transfer factor = conc of leaf / conc of soil
+transfer.factor.Ni = sum.AVG$meanNi[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanNi[sum.AVG$Sample.type =="soil"]
+#Ni trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.Ni = sum.AVG$meanNi[sum.AVG$Sample.type =="cata"] / sum.AVG$meanNi[sum.AVG$Sample.type =="leaf"]
+#Ni bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.Ni = sum.AVG$meanNi[sum.AVG$Sample.type =="cata"] / sum.AVG$meanNi[sum.AVG$Sample.type =="soil"]
+
+#Cu transfer factor = conc of leaf / conc of soil
+transfer.factor.Cu = sum.AVG$meanCu[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanCu[sum.AVG$Sample.type =="soil.diluted"]
+#Cu trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.Cu = sum.AVG$meanCu[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCu[sum.AVG$Sample.type =="leaf"]
+#Cu bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.Cu = sum.AVG$meanCu[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCu[sum.AVG$Sample.type =="soil.diluted"]
+
+#Zn transfer factor = conc of leaf / conc of soil
+transfer.factor.Zn = sum.AVG$meanZn[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanZn[sum.AVG$Sample.type =="soil.diluted"]
+#Zn trophic transfer factor = conc of cata / conc of leaf
+trophic.transfer.factor.Zn = sum.AVG$meanZn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanZn[sum.AVG$Sample.type =="leaf"]
+#Zn bioaccumulation factor = conc of cata / conc of soil
+bioaccumulation.factor.Zn = sum.AVG$meanZn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanZn[sum.AVG$Sample.type =="soil.diluted"]
+
+#sum.AVG<-sum.AVG%>%add_row(transfer.factor.Cd)
+
 str(sum.AVG)
 ```
 
@@ -448,30 +507,58 @@ hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "cata"]
 ```{r}
 library(ggplot2)
 
-tidyConc <- Concentration.AVG %>% gather("metal", "concentration", -Sample.ID, -Site.ID, -Sample.type)
+tidyConc <- Concentration.AVG %>% gather("metal", "concentration", -Sample.ID, -Site.ID, -Private.ID, -Sample.type)
 
+#Graphs for Cd
 ggplot(data=tidyConc %>% filter((Sample.type=="leaf" | Sample.type=="cata") & metal=="PPM.Cd.in.sample")) +
   geom_col(aes(x=Site.ID, y=concentration, group=Sample.type, fill=Sample.type), position="dodge") +
-  theme(axis.text.x=element_text(angle=90))
+  theme(axis.text.x=element_text(angle=90)) 
+
+#Creating scatterplot to check for normal distribution (relationship between X and Y should be linear if normally distributed)
+ggplot(data=tidyConc %>% filter((Sample.type=="leaf" | Sample.type=="cata") & metal=="PPM.Cd.in.sample"))+
+  geom_point(aes(x=Site.ID, y=concentration, group=Sample.type))
 
 
 ggplot(data=tidyConc %>% filter((Sample.type=="leaf" | Sample.type=="cata" | Sample.type=="soil.diluted") & metal=="PPM.Cu.in.sample")) +
   geom_col(aes(x=Site.ID, y=concentration, group=Sample.type, fill=Sample.type), position="dodge") +
   theme(axis.text.x=element_text(angle=90))
 
-
-
-
-#test for correlation in Cu between leaves and caterpillars
+#test for correlation in Cu between leaves and caterpillars -> because non-normal distribution, a non-parametric test is required
 #this assumes leaf and caterpillar and soil samples are in the same order
 Cu.leaf <- tidyConc %>% filter((Sample.type=="leaf") & metal=="PPM.Cu.in.sample")
 Cu.cata <- tidyConc %>% filter((Sample.type=="cata") & metal=="PPM.Cu.in.sample")
 Cu.soil <- tidyConc %>% filter((Sample.type=="soil.diluted") & metal=="PPM.Cu.in.sample")
-cor.test(Cu.leaf$concentration, Cu.soil$concentration)
+as.numeric(Cu.leaf$concentration)
+cor.test(Cu.leaf$concentration, Cu.soil$concentration) 
 
 #remerge leaf, cata, soil into a dataframe and redo correlation test would be a better way to do this (or using merge command) (left join by site ID)
 df<-left_join(Cu.leaf, Cu.cata, by="Site.ID")
 cor.test(df$concentration.x, df$concentration.y)
 
+```
+
+##Graphs for Cd
+
+```{r}
+library(ggplot2)
+
+#Barchart for Cd
+ggplot(data=tidyConc %>% filter((Sample.type=="leaf" | Sample.type=="cata" | Sample.type=="soil") & metal=="PPM.Cd.in.sample")) +
+  geom_col(aes(x=Private.ID, y=concentration, group=Sample.type, fill=Sample.type), position="dodge") +
+  theme(axis.text.x=element_text(angle=90)) 
+
+#Creating scatterplot to check for normal distribution (relationship between X and Y should be linear if normally distributed) between soil & leaf
+ggplot(data=tidyConc %>% filter((Sample.type=="soil" | Sample.type=="leaf") & metal=="PPM.Cd.in.sample"))+
+  geom_point(aes(x=Private.ID, y=concentration, group=Sample.type))
+  
+
+#Creating scatterplot to check for normal distribution (relationship between X and Y should be linear if normally distributed) between leaf & caterpilar
+ggplot(data=tidyConc %>% filter((Sample.type=="leaf" | Sample.type=="cata") & metal=="PPM.Cd.in.sample"))+
+  geom_point(aes(x=Private.ID, y=concentration, group=Sample.type))
+
+#Creating scatterplot to check for normal distribution (relationship between X and Y should be linear if normally distributed) between soil & caterpilar
+ggplot(data=tidyConc %>% filter((Sample.type=="soil" | Sample.type=="cata") & metal=="PPM.Cd.in.sample"))+
+  geom_point(aes(x=Private.ID, y=concentration, group=Sample.type))
+```
 ```
 
