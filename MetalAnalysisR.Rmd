@@ -346,71 +346,46 @@ I found soil PPMs of: 333 Pb (higher), 474 Zn (higher), 1.7 Cd (lower), 356 Mn (
 ```{r}
 #Average leaf concentration
 sum.AVG<-Concentration.AVG %>% group_by(Sample.type) %>% summarize(meanCd=mean(PPM.Cd.in.sample),
-          meanPb=mean(PPM.Pb.in.sample),
-          meanV=mean(PPM.V.in.sample),
-          meanCr=mean(PPM.Cr.in.sample),
-          meanMn=mean(PPM.Mn.in.sample),
-          meanNi=mean(PPM.Ni.in.sample),
-          meanCu=mean(PPM.Cu.in.sample),
-          meanZn=mean(PPM.Zn.in.sample))
-          
-#Cd transfer factor = conc of leaf / conc of soil
-transfer.factor.Cd = sum.AVG$meanCd[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanCd[sum.AVG$Sample.type =="soil"]
-#Cd trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.Cd = sum.AVG$meanCd[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCd[sum.AVG$Sample.type =="leaf"]
-#Cd bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.Cd = sum.AVG$meanCd[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCd[sum.AVG$Sample.type =="soil"]
+                                                                  meanPb=mean(PPM.Pb.in.sample),
+                                                                  meanV=mean(PPM.V.in.sample),
+                                                                  meanCr=mean(PPM.Cr.in.sample),
+                                                                  meanMn=mean(PPM.Mn.in.sample),
+                                                                  meanNi=mean(PPM.Ni.in.sample),
+                                                                  meanCu=mean(PPM.Cu.in.sample),
+                                                                  meanZn=mean(PPM.Zn.in.sample))
+        
+sum.AVG<-sum.AVG %>% filter(Sample.type != "method.blank")  #get rid of the method blank row
+tidy.sum.AVG<-sum.AVG %>% gather(metal,concentration,-Sample.type)  #put this back into tidy form
 
-#Pb transfer factor = conc of leaf / conc of soil
-transfer.factor.Pb = sum.AVG$meanPb[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanPb[sum.AVG$Sample.type =="soil.diluted"]
-#Pb trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.Pb = sum.AVG$meanPb[sum.AVG$Sample.type =="cata"] / sum.AVG$meanPb[sum.AVG$Sample.type =="leaf"]
-#Pb bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.Pb = sum.AVG$meanPb[sum.AVG$Sample.type =="cata"] / sum.AVG$meanPb[sum.AVG$Sample.type =="soil.diluted"]
 
-#V transfer factor = conc of leaf / conc of soil
-transfer.factor.V = sum.AVG$meanV[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanV[sum.AVG$Sample.type =="soil.diluted"]
-#V trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.V = sum.AVG$meanV[sum.AVG$Sample.type =="cata"] / sum.AVG$meanV[sum.AVG$Sample.type =="leaf"]
-#V bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.V = sum.AVG$meanV[sum.AVG$Sample.type =="cata"] / sum.AVG$meanV[sum.AVG$Sample.type =="soil.diluted"]
+#transfer factor is leaf/soil for Cd and Ni. create a 1 row data.frame with transfer factor for these 2 metals
+tf1<-(sum.AVG %>% filter(Sample.type=="leaf") %>% select(meanCd,meanNi))/(sum.AVG %>% filter(Sample.type=="soil") %>% select(meanCd,meanNi))
 
-#Cr transfer factor = conc of leaf / conc of soil
-transfer.factor.Cr = sum.AVG$meanCr[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanCr[sum.AVG$Sample.type =="soil"]
-#Cr trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.Cr = sum.AVG$meanCr[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCr[sum.AVG$Sample.type =="leaf"]
-#Cr bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.Cr = sum.AVG$meanCr[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCr[sum.AVG$Sample.type =="soil"]
+#transfer factor is leaf/soil.diluted for other metals. create a 1 row data.frame with transfer factor for  other metals
+tf2<-(sum.AVG %>% filter(Sample.type=="leaf") %>% select(meanPb,  meanV, meanCr, meanMn,  meanCu, meanZn))/(sum.AVG %>% filter(Sample.type=="soil.diluted") %>% select(meanPb,  meanV, meanCr, meanMn,  meanCu, meanZn))
 
-#Mn transfer factor = conc of leaf / conc of soil
-transfer.factor.Mn = sum.AVG$meanMn[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanMn[sum.AVG$Sample.type =="soil.diluted"]
-#Mn trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.Mn = sum.AVG$meanMn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanMn[sum.AVG$Sample.type =="leaf"]
-#Mn bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.Mn = sum.AVG$meanMn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanMn[sum.AVG$Sample.type =="soil.diluted"]
+#use cbind (column bind) to put tf1 and tf2 back together and add a column called Sample type
+#NOTE: this puts metals in a different order than they were in before
+tf<-cbind(data.frame(Sample.type="transfer factor"),cbind(tf1,tf2))
 
-#Ni transfer factor = conc of leaf / conc of soil
-transfer.factor.Ni = sum.AVG$meanNi[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanNi[sum.AVG$Sample.type =="soil"]
-#Ni trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.Ni = sum.AVG$meanNi[sum.AVG$Sample.type =="cata"] / sum.AVG$meanNi[sum.AVG$Sample.type =="leaf"]
-#Ni bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.Ni = sum.AVG$meanNi[sum.AVG$Sample.type =="cata"] / sum.AVG$meanNi[sum.AVG$Sample.type =="soil"]
+#trophic.transfer.factor is cata/leaf for all metals 
+#just select the metal contrations by using select(-Sample.type) which selects every colums except Sample.type
+ttf1<-(sum.AVG %>% filter(Sample.type=="cata") %>% select(-Sample.type))/(sum.AVG %>% filter(Sample.type=="leaf") %>% select(-Sample.type))
+ttf<-cbind(data.frame(Sample.type="trophic transfer factor"),ttf1)
 
-#Cu transfer factor = conc of leaf / conc of soil
-transfer.factor.Cu = sum.AVG$meanCu[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanCu[sum.AVG$Sample.type =="soil.diluted"]
-#Cu trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.Cu = sum.AVG$meanCu[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCu[sum.AVG$Sample.type =="leaf"]
-#Cu bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.Cu = sum.AVG$meanCu[sum.AVG$Sample.type =="cata"] / sum.AVG$meanCu[sum.AVG$Sample.type =="soil.diluted"]
+#bioaccumulation factor is cata/soil for Cd and Ni
+bf1<-(sum.AVG %>% filter(Sample.type=="cata") %>% select(meanCd,meanNi))/(sum.AVG %>% filter(Sample.type=="soil") %>% select(meanCd,meanNi))
+  
+#bioaccumulation factor is cata/soil.diluted for other metals
+bf2<-(sum.AVG %>% filter(Sample.type=="cata") %>% select(meanPb,  meanV, meanCr, meanMn,  meanCu, meanZn))/(sum.AVG %>% filter(Sample.type=="soil.diluted") %>% select(meanPb,  meanV, meanCr, meanMn,  meanCu, meanZn))
 
-#Zn transfer factor = conc of leaf / conc of soil
-transfer.factor.Zn = sum.AVG$meanZn[sum.AVG$Sample.type =="leaf"] / sum.AVG$meanZn[sum.AVG$Sample.type =="soil.diluted"]
-#Zn trophic transfer factor = conc of cata / conc of leaf
-trophic.transfer.factor.Zn = sum.AVG$meanZn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanZn[sum.AVG$Sample.type =="leaf"]
-#Zn bioaccumulation factor = conc of cata / conc of soil
-bioaccumulation.factor.Zn = sum.AVG$meanZn[sum.AVG$Sample.type =="cata"] / sum.AVG$meanZn[sum.AVG$Sample.type =="soil.diluted"]
+#bind bf1 and bf2 together with a column called Sample type to obtain one row for bioaccumulation factor
+bf<-cbind(data.frame(Sample.type="bioaccumulation factor"),cbind(bf1,bf2))
+                                                
+# now use rbind to put  tf, ttf back in sum.AVG
+sum.AVG<-rbind(sum.AVG,ttf,tf,bf)   
 
-#sum.AVG<-sum.AVG%>%add_row(transfer.factor.Cd)
+rm(tf1,tf2,tf,ttf1,ttf,bf1,bf2,bf)  #clean up a bit by getting rid (rm means"remove") of all the temporary data.frames that i created
 
 str(sum.AVG)
 ```
