@@ -110,45 +110,46 @@ str(Raw.data)
 #Calculating PPM for Buffalo River Controls
 
 ```{r}
-#PPM of Cd in Buffalo River Sediment for both dilutions
+#PPM of Cd in Buffalo River Sediment for both no dilution
 Raw.data<-Raw.data%>%mutate(PPM.Cd.in.buffalo=Raw.data$Cd111.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-Raw.data$PPM.Cd.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.Cd.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
 
-#PPM of Pb in Buffalo River Sediment for both dilutions
-Raw.data<-Raw.data%>%mutate(PPM.Pb.in.buffalo=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+#PPM of Pb in Buffalo River Sediment for diluted
+Raw.data<-Raw.data%>%mutate(PPM.Pb.in.buffalo=(Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000)
 
-Raw.data$PPM.Pb.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.Pb.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "soil.control" | Raw.data$Sample.type== "leaf"]<-NA
 
-#PPM of V in Buffalo River Sediment for both dilutions
+#PPM of V in Buffalo River Sediment for no dilution
 Raw.data<-Raw.data%>%mutate(PPM.V.in.buffalo=Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-Raw.data$PPM.V.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.V.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
 
-#PPM of Cr in Buffalo River Sediment for both dilutions
+#PPM of Cr in Buffalo River Sediment for no dilution
 Raw.data<-Raw.data%>%mutate(PPM.Cr.in.buffalo=Raw.data$Cr52.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-Raw.data$PPM.Cr.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.Cr.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
 
-#PPM of Mn in Buffalo River Sediment for both dilutions
-Raw.data<-Raw.data%>%mutate(PPM.Mn.in.buffalo=Raw.data$Mn55.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+#PPM of Mn in Buffalo River Sediment for diluted
+Raw.data<-Raw.data%>%mutate(PPM.Mn.in.buffalo=(Raw.data$Mn55.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000)
 
-Raw.data$PPM.Mn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.Mn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "soil.control" | Raw.data$Sample.type== "leaf"]<-NA
 
-#PPM of Ni in Buffalo River Sediment for both dilutions
+#PPM of Ni in Buffalo River Sediment for no dilution
 Raw.data<-Raw.data%>%mutate(PPM.Ni.in.buffalo=Raw.data$Ni60.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-Raw.data$PPM.Ni.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.Ni.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
 
 #PPM of Cu in Buffalo River Sediment for both dilutions
-Raw.data<-Raw.data%>%mutate(PPM.Cu.in.buffalo=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+Raw.data<-Raw.data%>%mutate(PPM.Cu.in.buffalo=(Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000)
 
-Raw.data$PPM.Cu.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.Cu.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "soil.control" | Raw.data$Sample.type== "leaf"]<-NA
 
 #PPM of Zn in Buffalo River Sediment for both dilutions
-Raw.data<-Raw.data%>%mutate(PPM.Zn.in.buffalo=Raw.data$Zn66.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
+Raw.data<-Raw.data%>%mutate(PPM.Zn.in.buffalo=(Raw.data$Zn66.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000)
 
-Raw.data$PPM.Zn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
+Raw.data$PPM.Zn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "soil.control" | Raw.data$Sample.type== "leaf"]<-NA
+
 ```
 
 
@@ -407,15 +408,21 @@ hist(Concentration.AVG$PPM.Cr.in.sample[Concentration.AVG$Sample.type == "leaf"]
 
 #Histogram of Mn leaf concentrations
 hist(Concentration.AVG$PPM.Mn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Mn concentrations", xlab="Mn concentration")
+abline(v=20, col='blue') #Mn concentration at or below 20 PPM is a deficient concentration (Marschner 1995)
 
 #Histogram of Ni leaf concentrations
 hist(Concentration.AVG$PPM.Ni.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Ni concentrations", xlab="Ni concentration")
+abline(v=10, col='red') #Ni concentration at or above 10 PPM is a toxic concentration (Marschner 1995)
 
 #Histogram of Cu leaf concentrations
 hist(Concentration.AVG$PPM.Cu.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Cu concentrations", xlab="Cu concentration")
+abline(v=20, col='red') #Cu concentration at or above 20 PPM is a toxic concentration (Marschner 1995)
+abline(v=5, col='blue') #Cu concentration at or below 5 PPM is a deficient concentration (Marschner 1995)
 
 #Histogram of Zn leaf concentrations
 hist(Concentration.AVG$PPM.Zn.in.sample[Concentration.AVG$Sample.type == "leaf"], main="Histogram of leaf Zn concentrations", xlab="Zn concentration")
+abline(v=100, col='red') #Zn concentration at or above 100 PPM is a toxic concentration (Marschner 1995)
+abline(v=20, col='blue') #Zn concentration at or below 20 PPM is a deficient concentration (Marschner 1995)
 ```
 
 
