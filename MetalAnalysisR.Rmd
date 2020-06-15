@@ -105,6 +105,25 @@ Raw.data$Second.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samp
 str(Raw.data)
 
 ```
+```{r data_checking}
+blank.intensity<-(Raw.data %>% filter(Sample.ID=="Method Blank", Isotope=="Intensity AVG"))[,4:11] %>% as.numeric()
+
+tmp<-(Raw.data %>% filter(Sample.ID!="Method Blank", Isotope=="Intensity AVG"))[,c(1,4:11)]
+
+for(i in 1:nrow(tmp))
+{
+  det<-as.numeric(tmp[i,2:ncol(tmp)]) > blank.intensity * 3
+  if(!all(det))
+  {
+    Raw.data[which(Raw.data$Sample.ID==tmp$Sample.ID[i]), which(det==FALSE)+3]<-NA
+  }
+}
+
+
+
+
+
+```
 
 
 #Calculating PPM for Buffalo River Controls
@@ -309,6 +328,20 @@ Concentration.AVG <- Raw.data %>% filter(Isotope=="Concentration AVG") %>% selec
 # Concentration.AVG<-as.data.frame(Concentration.AVG)
 ```
 
+```{r pivot_data}
+
+Cd_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Cd.in.sample)%>% mutate(acc1=leaf/soil,acc2=cata/leaf, metal="Cd")
+
+Pb_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Pb.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Pb")
+
+V_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.V.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="V")
+
+Cu_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Cu.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Cu")
+
+all<-rbind(Cd_site_summary,Pb_site_summary,V_site_summary,Cu_site_summary)
+all %>% group_by(metal) %>% summarize(soil.diluted=mean(soil.diluted,na.rm=TRUE),soil=mean(soil,na.rm=TRUE),leaf=mean(leaf,na.rm=TRUE),cata=mean(cata,na.rm=TRUE),mean.acc1=mean(acc1,na.rm=TRUE),mean.acc2=mean(acc2,na.rm=TRUE))
+
+```
 
 #Seeing only "Concentration STD"" from "Isotopes" column
 
