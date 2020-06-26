@@ -1,7 +1,7 @@
 ---
 title: "MetalAnalysis"
 author: "Megan Ogburn"
-date: "3/6/2020"
+date: "5/15/2020"
 output: html_document
 ---
 #Reading in the csv file
@@ -55,11 +55,13 @@ LeadSiteID$Site.ID<-factor(LeadSiteID$Site.ID)
 Raw.data <- Raw.data %>% left_join(LeadSiteID, by="Sample.ID")
 ```
 
+
 #Visualizing the data
 
 ```{r}
 str(Raw.data)
 ```
+
 
 #Cleaning the data
 
@@ -105,23 +107,46 @@ Raw.data$Second.Orange.Volume.in.mL<-(ifelse(Raw.data$Sample.ID %in% c(soil.samp
 str(Raw.data)
 
 ```
+
+
+#Data checking
+
 ```{r data_checking}
+#For each sample, the lowest standard must be greater than 3-7x the acid blank. Results below 3X the intensity average must be marked as "Not detected."
+
 blank.intensity<-(Raw.data %>% filter(Sample.ID=="Method Blank", Isotope=="Intensity AVG"))[,4:11] %>% as.numeric()
 
-tmp<-(Raw.data %>% filter(Sample.ID!="Method Blank", Isotope=="Intensity AVG"))[,c(1,4:11)]
+intensity.check<-(Raw.data %>% filter(Sample.ID!="Method Blank", Isotope=="Intensity AVG"))[,c(1,4:11)]
 
-for(i in 1:nrow(tmp))
+for(i in 1:nrow(intensity.check))
 {
-  det<-as.numeric(tmp[i,2:ncol(tmp)]) > blank.intensity * 3
+  det<-as.numeric(intensity.check[i,2:ncol(intensity.check)]) > blank.intensity * 3
   if(!all(det))
   {
-    Raw.data[which(Raw.data$Sample.ID==tmp$Sample.ID[i]), which(det==FALSE)+3]<-NA
+    Raw.data[which(Raw.data$Sample.ID==intensity.check$Sample.ID[i]), which(det==FALSE)+3]<-NA
   }
 }
 
+#"Data can be reported when the instrument result falls between the lowest and highest standard." For this data, the standard range is from 0.1ppb (100ppt) to 100ppb. All samples need to be checked to see if their Concentration AVG is in this range (eg: 0.1 < S001D=0.6993 < 100ppb). Debby: "put a symbol next to the reported number and state which values were >100ppb."
 
+concentration.AVG.check<-(Raw.data %>% filter(Sample.ID!="Method Blank", Isotope=="Concentration AVG"))[,c(1,4:11)]
 
-
+for(i in 1:nrow(concentration.AVG.check))
+{
+  det<-as.numeric(concentration.AVG.check[i,2:ncol(concentration.AVG.check)]) > 100
+  if(!all(det))
+  {
+    Raw.data[which(Raw.data$Sample.ID==concentration.AVG.check$Sample.ID[i]), which(det==FALSE)+3]<-NA
+  }
+}
+for(i in 1:nrow(concentration.AVG.check))
+{
+  det<-as.numeric(concentration.AVG.check[i,2:ncol(concentration.AVG.check)]) < 0.1
+  if(!all(det))
+  {
+    Raw.data[which(Raw.data$Sample.ID==concentration.AVG.check$Sample.ID[i]), which(det==FALSE)+3]<-NA
+  }
+}
 
 ```
 
@@ -336,10 +361,19 @@ Pb_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wide
 
 V_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.V.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="V")
 
+Cr_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Cr.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Cr")
+
+Mn_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Mn.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Mn")
+
+Ni_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Ni.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Ni")
+
 Cu_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Cu.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Cu")
 
-all<-rbind(Cd_site_summary,Pb_site_summary,V_site_summary,Cu_site_summary)
+Zn_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Zn.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Zn")
+
+all<-rbind(Cd_site_summary,Pb_site_summary,V_site_summary,Cr_site_summary,Mn_site_summary,Ni_site_summary,Cu_site_summary,Zn_site_summary)
 all %>% group_by(metal) %>% summarize(soil.diluted=mean(soil.diluted,na.rm=TRUE),soil=mean(soil,na.rm=TRUE),leaf=mean(leaf,na.rm=TRUE),cata=mean(cata,na.rm=TRUE),mean.acc1=mean(acc1,na.rm=TRUE),mean.acc2=mean(acc2,na.rm=TRUE))
+
 
 ```
 
