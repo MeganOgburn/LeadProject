@@ -129,22 +129,22 @@ for(i in 1:nrow(intensity.check))
 
 #"Data can be reported when the instrument result falls between the lowest and highest standard." For this data, the standard range is from 0.1ppb (100ppt) to 100ppb. All samples need to be checked to see if their Concentration AVG is in this range (eg: 0.1 < S001D=0.6993 < 100ppb). Debby: "put a symbol next to the reported number and state which values were >100ppb."
 
-concentration.AVG.check<-(Raw.data %>% filter(Sample.ID!="Method Blank", Isotope=="Concentration AVG"))[,c(1,4:11)]
+concentration.AVG.check<-(Raw.data %>% filter(Sample.ID!="Method Blank", Isotope=="Concentration AVG"))[,c(1,3:11)]
 
 for(i in 1:nrow(concentration.AVG.check))
 {
-  det<-as.numeric(concentration.AVG.check[i,2:ncol(concentration.AVG.check)]) > 100
-  if(!all(det))
+  det2<-as.numeric(concentration.AVG.check[i,2:ncol(concentration.AVG.check)]) < 100
+  if(!all(det2))
   {
-    Raw.data[which(Raw.data$Sample.ID==concentration.AVG.check$Sample.ID[i]), which(det==FALSE)+3]<-NA
+    Raw.data[which(Raw.data$Sample.ID==concentration.AVG.check$Sample.ID[i]), which(det2==FALSE)+3]<-NA
   }
 }
 for(i in 1:nrow(concentration.AVG.check))
 {
-  det<-as.numeric(concentration.AVG.check[i,2:ncol(concentration.AVG.check)]) < 0.1
-  if(!all(det))
+  det3<-as.numeric(concentration.AVG.check[i,2:ncol(concentration.AVG.check)]) > 0.1
+  if(!all(det3))
   {
-    Raw.data[which(Raw.data$Sample.ID==concentration.AVG.check$Sample.ID[i]), which(det==FALSE)+3]<-NA
+    Raw.data[which(Raw.data$Sample.ID==concentration.AVG.check$Sample.ID[i]), which(det3==FALSE)+3]<-NA
   }
 }
 
@@ -184,12 +184,12 @@ Raw.data<-Raw.data%>%mutate(PPM.Ni.in.buffalo=Raw.data$Ni60.MR.*(Raw.data$Final.
 
 Raw.data$PPM.Ni.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "leaf"]<-NA
 
-#PPM of Cu in Buffalo River Sediment for both dilutions
-Raw.data<-Raw.data%>%mutate(PPM.Cu.in.buffalo=(Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000)
+#PPM of Cu in Buffalo River Sediment for no dilution
+Raw.data<-Raw.data%>%mutate(PPM.Cu.in.buffalo=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
 Raw.data$PPM.Cu.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "soil.control" | Raw.data$Sample.type== "leaf"]<-NA
 
-#PPM of Zn in Buffalo River Sediment for both dilutions
+#PPM of Zn in Buffalo River Sediment for diluted
 Raw.data<-Raw.data%>%mutate(PPM.Zn.in.buffalo=(Raw.data$Zn66.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000)
 
 Raw.data$PPM.Zn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type== "soil" | Raw.data$Sample.type== "cata"| Raw.data$Sample.type== "leaf.control" | Raw.data$Sample.type== "soil.control" | Raw.data$Sample.type== "leaf"]<-NA
@@ -199,7 +199,7 @@ Raw.data$PPM.Zn.in.buffalo[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sampl
 
 #Calculating PPM for each element
 
-The use of once diluted versus twice diluted data per element is determined based on the raw input from the machine. When the concentration AVG output by the machine is out of the detectable range for that element, use the twice diluted data (elements: lead, vanadium, chromium, manganese, copper zinc; NOT cadmium or nickel). 
+The use of once diluted versus twice diluted data per element is determined based on the raw input from the machine. When the concentration AVG output by the machine is out of the detectable range for that element, use the twice diluted data (elements: lead, manganese, zinc; NOT vanadium, chromium, cadmium, copper or nickel). 
 
 
 ##PPM for Cadmium
@@ -210,6 +210,7 @@ Raw.data<-Raw.data%>%mutate(PPM.Cd.in.sample=Raw.data$Cd111.LR.*(Raw.data$Final.
 
 #ignore TWICE diluted dirt/soil samples because they are inaccurate
 Raw.data$PPM.Cd.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
+
 ```
 
 
@@ -227,8 +228,6 @@ Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Samp
 
 Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =="soil.control"]<-NA
 
-
-
 ##Original way I was doing things:
 #Raw.data<-Raw.data%>%mutate(PPM.Pb.in.diluted.dirt=Raw.data$Pb208.LR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))
 
@@ -239,32 +238,22 @@ Raw.data$PPM.Pb.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =
 ##PPM for Vanadium
 
 ```{r}
-#PPM of V in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
+#PPM of V in sample for all samples (note, ignore TWICE diluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.V.in.sample=Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-
-#PPM of V in sample for twice diluted dirt/soil samples
-PPM.V.in.diluted.dirt=(Raw.data$V51.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
-
-Raw.data$PPM.V.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.V.in.diluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
-
-Raw.data$PPM.V.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =="soil.control"]<-NA
+#ignore TWICE diluted dirt/soil samples because they are inaccurate
+Raw.data$PPM.V.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
 ```
 
 
 ##PPM for Chromium
 
 ```{r}
-#PPM of Cr in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
+#PPM of Cr in sample for all samples (note, ignore TWICE diluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Cr.in.sample=Raw.data$Cr52.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
-
-#PPM of Cr in sample for twice diluted dirt/soil samples
-PPM.Cr.in.diluted.dirt=(Raw.data$Cr52.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
-
-Raw.data$PPM.Cr.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.Cr.in.diluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
-
-Raw.data$PPM.Cr.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =="soil.control"]<-NA
+#ignore TWICE diluted dirt/soil samples because they are inaccurate
+Raw.data$PPM.Cr.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
 ```
 
 
@@ -298,16 +287,12 @@ Raw.data$PPM.Ni.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample
 ##PPM for Copper
 
 ```{r}
-#PPM of Cu in sample for caterpillar and leaf samples (note, ignore TWICE diluted dirt/soil samples)
+#PPM of Cu in sample for all samples (note, ignore TWICE diluted dirt/soil samples)
 Raw.data<-Raw.data%>%mutate(PPM.Cu.in.sample=Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)/1000)
 
+#ignore TWICE diluted dirt/soil samples because they are inaccurate
+Raw.data$PPM.Cu.in.sample[Raw.data$Sample.type=="soil.diluted" | Raw.data$Sample.type=="soil.control.diluted"]<-NA
 
-#PPM of Cu in sample for twice diluted dirt/soil samples
-PPM.Cu.in.diluted.dirt=(Raw.data$Cu63.MR.*(Raw.data$Final.Blue.Volume.in.mL/Raw.data$Mass..in.g.of.digested.sample.)*(Raw.data$First.Orange.Volume.in.mL/Raw.data$Extraction.from.blue.in.mL)*(Raw.data$Second.Orange.Volume.in.mL/Raw.data$Extraction.from.Orange.in.mL))/1000
-
-Raw.data$PPM.Cu.in.sample[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]<-PPM.Cu.in.diluted.dirt[Raw.data$Sample.type == "soil.diluted" | Raw.data$Sample.type ==  "soil.control.diluted"]
-
-Raw.data$PPM.Cu.in.sample[Raw.data$Sample.type =="soil" | Raw.data$Sample.type =="soil.control"]<-NA
 ```
 
 
@@ -371,8 +356,9 @@ Cu_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wide
 
 Zn_site_summary<-Concentration.AVG %>% filter(!is.na(Private.ID)) %>% pivot_wider(id_cols=c(Private.ID,Site.ID),names_from=Sample.type, values_from = PPM.Zn.in.sample) %>% mutate(acc1=leaf/soil.diluted,acc2=cata/leaf, metal="Zn")
 
-all<-rbind(Cd_site_summary,Pb_site_summary,V_site_summary,Cr_site_summary,Mn_site_summary,Ni_site_summary,Cu_site_summary,Zn_site_summary)
-all %>% group_by(metal) %>% summarize(soil.diluted=mean(soil.diluted,na.rm=TRUE),soil=mean(soil,na.rm=TRUE),leaf=mean(leaf,na.rm=TRUE),cata=mean(cata,na.rm=TRUE),mean.acc1=mean(acc1,na.rm=TRUE),mean.acc2=mean(acc2,na.rm=TRUE))
+
+
+  
 
 
 ```
